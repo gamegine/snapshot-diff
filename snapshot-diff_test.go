@@ -5,8 +5,8 @@ import (
 )
 
 func Test(t *testing.T) {
-	got := 4
-	want := 4
+	got := 1
+	want := 1
 
 	if got != want {
 		t.Errorf("got %q, wanted %q", got, want)
