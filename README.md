@@ -1,4 +1,5 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-purple.svg)](https://opensource.org/licenses/MIT)
+[![Github action](../../actions/workflows/go.yml/badge.svg?branch=main)](../../actions/workflows/go.yml)
 
 # snapshot-diff
 
@@ -22,12 +23,12 @@ These instructions will get you a copy of the project up and running on your loc
 
 ## Requirement
 
-snapshot-diff is currently planned to work on QNAP nas with docker through the [container-station](https://www.qnap.com/fr-fr/software/container-station) implementation offered by QNAP
+snapshot-diff is currently planned to work on QNAP nas with docker through the [container-station](https://www.qnap.com/fr-fr/software/container-station) implementation
 
 ## :floppy_disk: Install
 
 - install [container-station](https://www.qnap.com/fr-fr/software/container-station) using QNAP App Center
-- Creating an Application usin the content of `docker-compose.yml`
+- Creating an Application using the content of `docker-compose.yml`
 
 ## :sos: Troubleshooting
 
