@@ -1,0 +1,11 @@
+version: "2.1"
+
+services:
+  snapshotdiff:
+    build:
+      context: .
+    container_name: snapshot-diff
+    network_mode: none
+    volumes:
+# snapshot
+      - /mnt/snapshot:/mnt/snapshot:ro
