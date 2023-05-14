@@ -1,7 +1,6 @@
 package models
 
 import (
-	"io/fs"
 	"os"
 	"path/filepath"
 )
@@ -13,22 +12,12 @@ type Volume struct {
 
 type Volumes []Volume
 
-func RemoveFiles(slice []fs.DirEntry) []fs.DirEntry {
-	var sliceres []fs.DirEntry
-	for _, entry := range slice {
-		if entry.IsDir() {
-			sliceres = append(sliceres, entry)
-		}
-	}
-	return sliceres
-}
-
 func (v *Volume) UpdateSnapshotsList() error {
 	entries, err := os.ReadDir(v.SnapshotsPath)
 	if err != nil {
 		return err
 	}
-	entries = RemoveFiles(entries)
+	// entries = RemoveFiles(entries) // symlink
 	for _, e := range entries {
 		v.Snapshots = append(v.Snapshots, Snapshot{Path: filepath.Join(v.SnapshotsPath, e.Name())})
 	}
@@ -43,7 +32,6 @@ func LoadVolumes() (Volumes, error) {
 	if err != nil {
 		return nil, err
 	}
-	entries = RemoveFiles(entries)
 	for _, e := range entries {
 		v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
 	}

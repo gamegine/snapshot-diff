@@ -20,6 +20,7 @@ func TestSnapshotLoad(t *testing.T) {
 
 	if len(paths) != len(got.Files) {
 		t.Errorf("got %v, wanted %v", len(paths), len(got.Files))
+		return
 	}
 
 	// []gotpaths = got.[]Files.Path
@@ -27,13 +28,42 @@ func TestSnapshotLoad(t *testing.T) {
 	for i, f := range got.Files {
 		gotpaths[i] = f.Path
 	}
-
 	// if reflect.DeepEqual(paths, gotpaths) {
 	// 	t.Errorf("got \n%v\nwanted \n%v", paths, gotpaths)
 	// }
 	for i, p := range gotpaths {
 		if p != paths[i] {
 			t.Errorf("got %v wanted %v", p, paths[i])
+		}
+	}
+}
+
+func TestSnapshotLoadSymlink(t *testing.T) {
+	var got = Snapshot{Path: "../testdata/snapshot/symlink"}
+	err := got.Load()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+	want := []string{
+		"../testdata/snapshot/GMT+01_2023-05-08_1034/.qextension",
+		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots",
+		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle",
+		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini",
+	}
+
+	if len(want) != len(got.Files) {
+		t.Errorf("got %v, wanted %v", len(want), len(got.Files))
+		return
+	}
+
+	// []gotpaths = got.[]Files.Path
+	gotpaths := make([]string, len(got.Files))
+	for i, f := range got.Files {
+		gotpaths[i] = f.Path
+	}
+	for i, p := range gotpaths {
+		if p != want[i] {
+			t.Errorf("got %v wanted %v", p, want[i])
 		}
 	}
 }

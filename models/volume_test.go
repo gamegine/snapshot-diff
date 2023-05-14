@@ -46,10 +46,12 @@ func TestVolumeUpdateSnapshotsList(t *testing.T) {
 		"../testdata/snapshot/GMT+01_2023-05-08_1142",
 		"../testdata/snapshot/GMT+01_2023-05-08_1144",
 		"../testdata/snapshot/GMT+01_2023-05-08_1145",
+		"../testdata/snapshot/symlink",
 	}
 
 	if len(got.Snapshots) != len(want) {
 		t.Errorf("got %v, wanted %v", len(got.Snapshots), len(want))
+		return
 	}
 	for i, s := range got.Snapshots {
 		if s.Path != want[i] {

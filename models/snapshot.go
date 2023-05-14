@@ -14,7 +14,11 @@ type Snapshot struct {
 type Snapshots []Snapshot
 
 func (s *Snapshot) Load() error {
-	err := filepath.Walk(s.Path,
+	resolvePath, err := filepath.EvalSymlinks(s.Path)
+	if err != nil {
+		return err
+	}
+	err = filepath.Walk(resolvePath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -22,7 +26,7 @@ func (s *Snapshot) Load() error {
 			// skip patern
 			{
 				// skip snapshots dir (./)
-				if path == s.Path {
+				if path == resolvePath {
 					return nil
 				}
 				// var reg = regexp.MustCompile(`@Recently-Snapshot|@Recycle`)
