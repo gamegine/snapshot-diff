@@ -13,8 +13,12 @@ func printSnapshot(s models.Snapshot) {
 }
 
 func main() {
-	var s = models.Snapshot{Path: "./testdata/snapshot/GMT+01_2023-05-08_1140/"}
-	s.Load()
-	s.LoadFiles()
-	printSnapshot(s)
+	models.SnapshotsPath = "./testdata"
+
+	v, _ := models.LoadVolumes()
+	fmt.Println(v)
+	_ = v[0].UpdateSnapshotsList()
+	printSnapshot(v[0].Snapshots[0])
+	_ = v[0].Snapshots[0].Load()
+	printSnapshot(v[0].Snapshots[0])
 }
