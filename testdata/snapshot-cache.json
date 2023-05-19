@@ -1,0 +1,29 @@
+{
+	"path": "testdata/snapshot/GMT+01_2023-05-08_1034",
+	"files": [
+		{
+			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension",
+			"dir": false,
+			"chmod": 0,
+			"modified": "0001-01-01T00:00:00Z"
+		},
+		{
+			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots",
+			"dir": false,
+			"chmod": 0,
+			"modified": "0001-01-01T00:00:00Z"
+		},
+		{
+			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle",
+			"dir": false,
+			"chmod": 0,
+			"modified": "0001-01-01T00:00:00Z"
+		},
+		{
+			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini",
+			"dir": false,
+			"chmod": 0,
+			"modified": "0001-01-01T00:00:00Z"
+		}
+	]
+}

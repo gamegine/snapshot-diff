@@ -67,3 +67,13 @@ func TestVolumeUpdateSnapshotsListWithErr(t *testing.T) {
 		t.Errorf("no error with undefined file")
 	}
 }
+
+func TestVolumeName(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+	var s = Volume{SnapshotsPath: "../testdata/snapshot"}
+	got := s.Name()
+	want := "snapshot"
+	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}

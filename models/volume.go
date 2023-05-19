@@ -3,6 +3,7 @@ package models
 import (
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Volume struct {
@@ -33,7 +34,13 @@ func LoadVolumes() (Volumes, error) {
 		return nil, err
 	}
 	for _, e := range entries {
-		v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
+		if e.IsDir() {
+			v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
+		}
 	}
 	return v, nil
+}
+
+func (v *Volume) Name() string {
+	return strings.ReplaceAll(v.SnapshotsPath, SnapshotsPath, "")
 }

@@ -1,7 +1,9 @@
 package models
 
 import (
+	"fmt"
 	"testing"
+	"time"
 )
 
 func TestSnapshotLoad(t *testing.T) {
@@ -95,5 +97,83 @@ func TestSnapshotLoadFilesWithErr(t *testing.T) {
 	err := s.LoadFiles()
 	if err == nil {
 		t.Errorf("no error with undefined file")
+	}
+}
+
+func TestSnapshotCachePath(t *testing.T) {
+	s := Snapshot{Path: "testdata/snapshot/GMT+01_2023-05-08_1034"}
+	got := s.CachePath("vol")
+	want := "cache/vol/GMT+01_2023-05-08_1034.json"
+
+	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestSnapshotSaveCache(t *testing.T) {
+	s := Snapshot{Files: []File{
+		{Path: "./file.go"},
+	}}
+	err := s.SaveCache("../testdata/save-snapshot.json")
+	if err != nil {
+		t.Errorf("SaveCache error %v", err)
+	}
+}
+
+func TestSnapshotSaveCacheWithPathErr(t *testing.T) {
+	s := Snapshot{Files: []File{
+		{Path: "./file.go"},
+	}}
+	err := s.SaveCache("./")
+	if err == nil {
+		t.Error("no error with dir path to save file")
+	}
+}
+
+func TestSnapshotLoadCache(t *testing.T) {
+	s := Snapshot{}
+	err := s.LoadCache("../testdata/snapshot-cache.json")
+	fmt.Println(s)
+	if err != nil {
+		t.Errorf("LoadCache error %v", err)
+	}
+
+	T, _ := time.Parse(time.RFC3339, "0001-01-01T00:00:00Z")
+	want := Snapshot{
+		Path: "testdata/snapshot/GMT+01_2023-05-08_1034",
+		Files: Files{
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
+		}}
+	_ = want
+	if s.Path != want.Path {
+		t.Errorf("got %v, wanted %v", s, want)
+	}
+	if len(s.Files) != len(want.Files) {
+		t.Errorf("got %v, wanted %v", s, want)
+	}
+	for i := range s.Files {
+		if s.Files[i] != want.Files[i] {
+			t.Errorf("got %v, wanted %v", s, want)
+		}
+	}
+
+}
+
+func TestSnapshotLoadCacheWithPathErr(t *testing.T) {
+	s := Snapshot{}
+	err := s.LoadCache("./undef")
+	if err == nil {
+		t.Error("no error with dir path to save file")
+	}
+}
+
+func TestSnapshotLoadCacheWithJsonErr(t *testing.T) {
+	s := Snapshot{}
+	err := s.LoadCache("../testdata/snapshot-cache-error.json")
+	if err == nil {
+		t.Error("no error with invalid json format")
 	}
 }
