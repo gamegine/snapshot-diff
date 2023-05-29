@@ -7,14 +7,13 @@ import (
 
 func main() {
 	models.SnapshotsPath = "testdata/"
-	vs, err := models.LoadVolumes()
+	volumes, err := models.LoadVolumes()
 	if err != nil {
 		fmt.Printf("Error LoadVolumes: %v\n", err)
 		return
 	}
-	fmt.Println(vs)
-	if len(vs) != 0 {
-		v := vs[0]
+	if len(volumes) != 0 {
+		v := &volumes[0]
 		err := v.UpdateSnapshotsList()
 		if err != nil {
 			fmt.Printf("Error UpdateSnapshotsList: %v\n", err)
@@ -22,14 +21,15 @@ func main() {
 		}
 		fmt.Printf("volume %s %d snapshots\n", v.Name(), len(v.Snapshots))
 		if len(v.Snapshots) != 0 {
-			fmt.Printf("snapshot 1 path: %s, cache: %s\n", v.Snapshots[0].Path, v.Snapshots[0].CachePath(v.Name()))
-			err = v.Snapshots[0].Load()
+			s := &v.Snapshots[0]
+			fmt.Printf("snapshot: %s \n\tpath: %s\n\tcache: %s\n", s.Name(), s.Path, s.CachePath(v.Name()))
+			err = s.Load()
 			if err != nil {
 				fmt.Printf("Error Snapshots.Load: %v\n", err)
 				return
 			}
-			for _, f := range v.Snapshots[0].Files {
-				fmt.Printf("\t%s\n", f.Path)
+			for _, f := range s.Files {
+				fmt.Printf("\t\t%s\n", f.Path)
 			}
 		}
 	}

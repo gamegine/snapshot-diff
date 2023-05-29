@@ -177,3 +177,12 @@ func TestSnapshotLoadCacheWithJsonErr(t *testing.T) {
 		t.Error("no error with invalid json format")
 	}
 }
+
+func TestSnapshotName(t *testing.T) {
+	s := Snapshot{Path: "testdata/snapshot/GMT+01_2023-05-08_1034"}
+	got := s.Name()
+	want := "GMT+01_2023-05-08_1034"
+	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}

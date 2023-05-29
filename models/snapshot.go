@@ -95,3 +95,8 @@ func (s *Snapshot) LoadCache(path string) error {
 	}
 	return nil
 }
+
+func (s *Snapshot) Name() string {
+	str := strings.Split(s.Path, "/")
+	return str[len(str)-1]
+}
