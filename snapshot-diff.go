@@ -2,11 +2,17 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"snapshot-diff/models"
 )
 
 func main() {
-	models.SnapshotsPath = "testdata/"
+	{
+		_, present := os.LookupEnv("test")
+		if present {
+			models.SnapshotsPath = "testdata/"
+		}
+	}
 	volumes, err := models.LoadVolumes()
 	if err != nil {
 		fmt.Printf("Error LoadVolumes: %v\n", err)
@@ -19,7 +25,7 @@ func main() {
 			fmt.Printf("Error UpdateSnapshotsList: %v\n", err)
 			return
 		}
-		fmt.Printf("volume %s %d snapshots\n", v.Name(), len(v.Snapshots))
+		fmt.Printf("volume %s, %d snapshots\n", v.Name(), len(v.Snapshots))
 		if len(v.Snapshots) != 0 {
 			s := &v.Snapshots[0]
 			fmt.Printf("snapshot: %s \n\tpath: %s\n\tcache: %s\n", s.Name(), s.Path, s.CachePath(v.Name()))
