@@ -34,8 +34,18 @@ func main() {
 				fmt.Printf("Error Snapshots.Load: %v\n", err)
 				return
 			}
+			err = s.LoadFilesInfo()
+			if err != nil {
+				fmt.Printf("Error Snapshots.LoadFilesInfo: %v\n", err)
+				return
+			}
 			for _, f := range s.Files {
 				fmt.Printf("\t\t%s\n", f.Path)
+				if !f.IsDir {
+					f.Hash()
+					fmt.Printf("\t\t\t%s\n", f.Sha256)
+				}
+
 			}
 		}
 	}

@@ -50,7 +50,7 @@ func (s *Snapshot) Load() error {
 	return nil
 }
 
-func (s *Snapshot) LoadFiles() error {
+func (s *Snapshot) LoadFilesInfo() error {
 	for i := range s.Files {
 		err := s.Files[i].Load()
 		if err != nil {

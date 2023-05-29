@@ -1,6 +1,9 @@
 package models
 
 import (
+	"crypto/sha256"
+	"fmt"
+	"io"
 	"os"
 	"time"
 )
@@ -29,5 +32,21 @@ func (f *File) Load() error {
 		Size:      fileInfo.Size(),
 		ModifTime: fileInfo.ModTime(),
 	}
+	return nil
+}
+
+func (f *File) Hash() error {
+	fo, err := os.Open(f.Path)
+	if err != nil {
+		return err
+	}
+	defer fo.Close()
+
+	hash := sha256.New()
+	_, err = io.Copy(hash, fo)
+	if err != nil {
+		return err
+	}
+	f.Sha256 = fmt.Sprintf("%X", hash.Sum(nil))
 	return nil
 }

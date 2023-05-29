@@ -78,23 +78,23 @@ func TestSnapshotLoadWithErr(t *testing.T) {
 	}
 }
 
-func TestSnapshotLoadFiles(t *testing.T) {
+func TestSnapshotLoadFilesInfo(t *testing.T) {
 	s := Snapshot{Files: []File{{Path: "./file.go"}}}
-	err := s.LoadFiles()
+	err := s.LoadFilesInfo()
 	if err != nil {
-		t.Errorf("LoadFiles error %v", err)
+		t.Errorf("LoadFilesInfo error %v", err)
 	}
 	if s.Files[0].Chmod == 0 {
 		t.Errorf("file is not load %v", s.Files[0])
 	}
 }
 
-func TestSnapshotLoadFilesWithErr(t *testing.T) {
+func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
 	s := Snapshot{Files: []File{
 		{Path: "./file.go"},
 		{Path: "./undef"},
 	}}
-	err := s.LoadFiles()
+	err := s.LoadFilesInfo()
 	if err == nil {
 		t.Errorf("no error with undefined file")
 	}
