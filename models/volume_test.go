@@ -70,7 +70,7 @@ func TestVolumeUpdateSnapshotsListWithErr(t *testing.T) {
 
 func TestVolumeName(t *testing.T) {
 	SnapshotsPath = "../testdata/"
-	var s = Volume{SnapshotsPath: "../testdata/snapshot"}
+	var s = Volume{SnapshotsPath: "../testdata/snapshot Snapshot"}
 	got := s.Name()
 	want := "snapshot"
 	if got != want {

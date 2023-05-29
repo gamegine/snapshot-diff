@@ -42,5 +42,5 @@ func LoadVolumes() (Volumes, error) {
 }
 
 func (v *Volume) Name() string {
-	return strings.ReplaceAll(v.SnapshotsPath, SnapshotsPath, "")
+	return strings.ReplaceAll(strings.ReplaceAll(v.SnapshotsPath, SnapshotsPath, ""), " Snapshot", "")
 }
