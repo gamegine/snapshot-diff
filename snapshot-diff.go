@@ -47,6 +47,11 @@ func main() {
 				}
 
 			}
+			path := v.CacheDir()
+			err = s.SaveCache(s.CacheFilePath(path))
+			if err != nil {
+				fmt.Println(err)
+			}
 		}
 	}
 }

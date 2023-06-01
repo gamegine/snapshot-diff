@@ -21,3 +21,4 @@
 go.work
 snapshot-diff
 testdata/save-snapshot.json
+cache

@@ -100,10 +100,10 @@ func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
 	}
 }
 
-func TestSnapshotCachePath(t *testing.T) {
+func TestSnapshotCacheFilePath(t *testing.T) {
 	s := Snapshot{Path: "testdata/snapshot/GMT+01_2023-05-08_1034"}
-	got := s.CachePath("vol")
-	want := "cache/vol/GMT+01_2023-05-08_1034.json"
+	got := s.CacheFilePath("cache")
+	want := "cache/GMT+01_2023-05-08_1034.json"
 
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)

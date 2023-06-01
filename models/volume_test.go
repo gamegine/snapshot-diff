@@ -1,6 +1,7 @@
 package models
 
 import (
+	"os"
 	"testing"
 )
 
@@ -75,5 +76,19 @@ func TestVolumeName(t *testing.T) {
 	want := "snapshot"
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestCacheDir(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+	SnapshotsCachePath = "../cache"
+	var s = Volume{SnapshotsPath: "../testdata/snapshot Snapshot"}
+	got := s.CacheDir()
+	want := "../cache/snapshot"
+	if got != want {
+		t.Errorf("got cache path %v, wanted %v", got, want)
+	}
+	if _, err := os.Stat(got); os.IsNotExist(err) {
+		t.Error("cache path does not exist")
 	}
 }

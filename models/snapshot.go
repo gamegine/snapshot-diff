@@ -60,10 +60,8 @@ func (s *Snapshot) LoadFilesInfo() error {
 	return nil
 }
 
-var SnapshotsCachePath = "./cache"
-
-func (s *Snapshot) CachePath(vol string) string {
-	return path.Join(SnapshotsCachePath, vol, s.Path[strings.LastIndex(s.Path, "/")+1:]) + ".json"
+func (s *Snapshot) CacheFilePath(cacheDir string) string {
+	return path.Join(cacheDir, s.Path[strings.LastIndex(s.Path, "/")+1:]) + ".json"
 }
 
 func (s *Snapshot) SaveCache(path string) error {

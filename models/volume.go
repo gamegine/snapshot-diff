@@ -2,6 +2,7 @@ package models
 
 import (
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 )
@@ -43,4 +44,12 @@ func LoadVolumes() (Volumes, error) {
 
 func (v *Volume) Name() string {
 	return strings.ReplaceAll(strings.ReplaceAll(v.SnapshotsPath, SnapshotsPath, ""), " Snapshot", "")
+}
+
+var SnapshotsCachePath = "./cache"
+
+func (v *Volume) CacheDir() string {
+	path := path.Join(SnapshotsCachePath, v.Name())
+	os.MkdirAll(path, os.ModePerm)
+	return path
 }
