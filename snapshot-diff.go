@@ -18,8 +18,8 @@ func main() {
 		fmt.Printf("Error LoadVolumes: %v\n", err)
 		return
 	}
-	if len(volumes) != 0 {
-		v := &volumes[0]
+	for i := range volumes {
+		v := &volumes[i]
 		CacheDirPath := v.CacheDir()
 		err := v.UpdateSnapshotsList()
 		if err != nil {
@@ -27,8 +27,8 @@ func main() {
 			return
 		}
 		fmt.Printf("volume %s, %d snapshots\n", v.Name(), len(v.Snapshots))
-		if len(v.Snapshots) != 0 {
-			s := &v.Snapshots[0]
+		for si := range v.Snapshots {
+			s := &v.Snapshots[si]
 			fmt.Printf("snapshot: %s \n\tpath: %s\n\tcache: %s\n", s.Name(), s.Path, s.CacheFilePath(CacheDirPath))
 			err = s.Load()
 			if err != nil {
@@ -40,7 +40,8 @@ func main() {
 				fmt.Printf("Error Snapshots.LoadFilesInfo: %v\n", err)
 				return
 			}
-			for _, f := range s.Files {
+			for i := range s.Files {
+				f := &s.Files[i]
 				fmt.Printf("\t\t%s\n", f.Path)
 				if !f.IsDir {
 					f.Hash()
