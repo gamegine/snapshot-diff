@@ -2,7 +2,7 @@ package models
 
 import (
 	"encoding/json"
-	"io/ioutil"
+
 	"os"
 	"path"
 	"path/filepath"
@@ -71,7 +71,7 @@ func (s *Snapshot) SaveCache(path string) error {
 		// Error during Marshal()
 		return err
 	}
-	err = ioutil.WriteFile(path, jsonByte, 0644) // 0644 Unix permission bits
+	err = os.WriteFile(path, jsonByte, 0644) // 0644 Unix permission bits
 	if err != nil {
 		// Error during WriteFile()
 		return err
@@ -80,7 +80,7 @@ func (s *Snapshot) SaveCache(path string) error {
 }
 
 func (s *Snapshot) LoadCache(path string) error {
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		// Error during ReadFile
 		return err
