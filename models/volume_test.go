@@ -35,6 +35,24 @@ func TestLoadVolumesWithErr(t *testing.T) {
 	}
 }
 
+func TestVolumeContain(t *testing.T) {
+	var vol = Volume{
+		Snapshots: Snapshots{
+			Snapshot{Path: "a"},
+			Snapshot{Path: "c"},
+		},
+	}
+	if !contain(vol, "a") {
+		t.Errorf("a not in vol[a,c], wanted yes")
+	}
+	if contain(vol, "b") {
+		t.Errorf("b in vol[a,c], wanted yes")
+	}
+	if !contain(vol, "c") {
+		t.Errorf("c not in vol[a,c], wanted yes")
+	}
+}
+
 func TestVolumeUpdateSnapshotsList(t *testing.T) {
 	var got = Volume{SnapshotsPath: "../testdata/snapshot"}
 	err := got.UpdateSnapshotsList()
@@ -57,6 +75,45 @@ func TestVolumeUpdateSnapshotsList(t *testing.T) {
 	for i, s := range got.Snapshots {
 		if s.Path != want[i] {
 			t.Errorf("got %v wanted %v", s.Path, want[i])
+		}
+	}
+}
+
+func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
+	var got = Volume{
+		SnapshotsPath: "../testdata/snapshot",
+		Snapshots: Snapshots{
+			Snapshot{
+				Path:  "../testdata/snapshot/GMT+01_2023-05-08_1034",
+				Files: Files{File{}},
+			},
+		},
+	}
+	err := got.UpdateSnapshotsList()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+	want := []string{
+		"../testdata/snapshot/GMT+01_2023-05-08_1034",
+		"../testdata/snapshot/GMT+01_2023-05-08_1140",
+		"../testdata/snapshot/GMT+01_2023-05-08_1142",
+		"../testdata/snapshot/GMT+01_2023-05-08_1144",
+		"../testdata/snapshot/GMT+01_2023-05-08_1145",
+		"../testdata/snapshot/symlink",
+	}
+
+	if len(got.Snapshots) != len(want) {
+		t.Errorf("got %v, wanted %v", len(got.Snapshots), len(want))
+		return
+	}
+	for i, s := range got.Snapshots {
+		if s.Path != want[i] {
+			t.Errorf("got %v wanted %v", s.Path, want[i])
+		}
+		if s.Path == "../testdata/snapshot/GMT+01_2023-05-08_1034" {
+			if len(s.Files) != 1 {
+				t.Errorf("existing snapshot data was erased %v", s)
+			}
 		}
 	}
 }

@@ -14,6 +14,15 @@ type Volume struct {
 
 type Volumes []Volume
 
+func contain(v Volume, snapshotsPath string) bool {
+	for _, s := range v.Snapshots {
+		if s.Path == snapshotsPath {
+			return true
+		}
+	}
+	return false
+}
+
 func (v *Volume) UpdateSnapshotsList() error {
 	entries, err := os.ReadDir(v.SnapshotsPath)
 	if err != nil {
@@ -21,7 +30,9 @@ func (v *Volume) UpdateSnapshotsList() error {
 	}
 	// entries = RemoveFiles(entries) // symlink
 	for _, e := range entries {
-		v.Snapshots = append(v.Snapshots, Snapshot{Path: filepath.Join(v.SnapshotsPath, e.Name())})
+		if !contain(*v, filepath.Join(v.SnapshotsPath, e.Name())) {
+			v.Snapshots = append(v.Snapshots, Snapshot{Path: filepath.Join(v.SnapshotsPath, e.Name())})
+		}
 	}
 	return nil
 }
