@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-func TestSnapshotLoad(t *testing.T) {
+func TestSnapshotLoadFiles(t *testing.T) {
 	var got = Snapshot{Path: "../testdata/snapshot/GMT+01_2023-05-08_1140/"}
-	err := got.Load()
+	err := got.LoadFiles()
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
@@ -40,9 +40,28 @@ func TestSnapshotLoad(t *testing.T) {
 	}
 }
 
-func TestSnapshotLoadSymlink(t *testing.T) {
+func TestSnapshotLoadFilesAlreadyloaded(t *testing.T) {
+	var got = Snapshot{
+		Path:  "../testdata/snapshot/GMT+01_2023-05-08_1140/",
+		Files: Files{File{Path: "file"}},
+	}
+	err := got.LoadFiles()
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+	if len(got.Files) != 1 {
+		t.Errorf("loaded files not preserved %v", got.Files)
+		return
+	}
+	if got.Files[0].Path != "file" {
+		t.Errorf("loaded files not preserved %v", got.Files[0])
+		return
+	}
+}
+
+func TestSnapshotLoadFilesSymlink(t *testing.T) {
 	var got = Snapshot{Path: "../testdata/snapshot/symlink"}
-	err := got.Load()
+	err := got.LoadFiles()
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
@@ -70,9 +89,9 @@ func TestSnapshotLoadSymlink(t *testing.T) {
 	}
 }
 
-func TestSnapshotLoadWithErr(t *testing.T) {
+func TestSnapshotLoadFilesWithErr(t *testing.T) {
 	var s = Snapshot{Path: "undef"}
-	err := s.Load()
+	err := s.LoadFiles()
 	if err == nil {
 		t.Errorf("no error with undefined file")
 	}

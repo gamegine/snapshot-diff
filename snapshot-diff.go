@@ -30,9 +30,9 @@ func main() {
 		for si := range v.Snapshots {
 			s := &v.Snapshots[si]
 			fmt.Printf("snapshot: %s \n\tpath: %s\n\tcache: %s\n", s.Name(), s.Path, s.CacheFilePath(CacheDirPath))
-			err = s.Load()
+			err = s.LoadFiles()
 			if err != nil {
-				fmt.Printf("Error Snapshots.Load: %v\n", err)
+				fmt.Printf("Error Snapshots.LoadFiles: %v\n", err)
 				return
 			}
 			err = s.LoadFilesInfo()

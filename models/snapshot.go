@@ -17,7 +17,10 @@ type Snapshot struct {
 
 type Snapshots []Snapshot
 
-func (s *Snapshot) Load() error {
+func (s *Snapshot) LoadFiles() error {
+	if len(s.Files) != 0 { // not load already loaded
+		return nil
+	}
 	resolvePath, err := filepath.EvalSymlinks(s.Path)
 	if err != nil {
 		return err
