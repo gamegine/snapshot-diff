@@ -1,7 +1,6 @@
 package models
 
 import (
-	"fmt"
 	"testing"
 	"time"
 )
@@ -152,7 +151,6 @@ func TestSnapshotSaveCacheWithPathErr(t *testing.T) {
 func TestSnapshotLoadCache(t *testing.T) {
 	s := Snapshot{}
 	err := s.LoadCache("../testdata/snapshot-cache.json")
-	fmt.Println(s)
 	if err != nil {
 		t.Errorf("LoadCache error %v", err)
 	}
