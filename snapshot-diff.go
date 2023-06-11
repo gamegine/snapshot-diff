@@ -30,24 +30,32 @@ func main() {
 		for si := range v.Snapshots {
 			s := &v.Snapshots[si]
 			fmt.Printf("snapshot: %s \n\tpath: %s\n\tcache: %s\n", s.Name(), s.Path, s.CacheFilePath(CacheDirPath))
-			err = s.LoadFiles()
-			if err != nil {
-				fmt.Printf("Error Snapshots.LoadFiles: %v\n", err)
-				return
-			}
-			err = s.LoadFilesInfo()
-			if err != nil {
-				fmt.Printf("Error Snapshots.LoadFilesInfo: %v\n", err)
-				return
+			cacheErr := s.LoadCache(s.CacheFilePath(CacheDirPath))
+			if cacheErr != nil {
+				fmt.Println("load")
+				err = s.LoadFiles()
+				if err != nil {
+					fmt.Printf("Error Snapshots.LoadFiles: %v\n", err)
+					return
+				}
+				err = s.LoadFilesInfo()
+				if err != nil {
+					fmt.Printf("Error Snapshots.LoadFilesInfo: %v\n", err)
+					return
+				}
+				for i := range s.Files {
+					f := &s.Files[i]
+					if !f.IsDir {
+						f.Hash()
+					}
+				}
 			}
 			for i := range s.Files {
 				f := &s.Files[i]
 				fmt.Printf("\t\t%s\n", f.Path)
 				if !f.IsDir {
-					f.Hash()
 					fmt.Printf("\t\t\t%s\n", f.Sha256)
 				}
-
 			}
 			err = s.SaveCache(s.CacheFilePath(CacheDirPath))
 			if err != nil {
