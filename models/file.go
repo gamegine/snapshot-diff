@@ -6,6 +6,8 @@ import (
 	"io"
 	"os"
 	"time"
+
+	"github.com/schollz/progressbar/v3"
 )
 
 type File struct {
@@ -49,4 +51,32 @@ func (f *File) Hash() error {
 	}
 	f.Sha256 = fmt.Sprintf("%X", hash.Sum(nil))
 	return nil
+}
+
+func (f *File) HashProgress() error {
+	fo, err := os.Open(f.Path)
+	if err != nil {
+		return err
+	}
+	defer fo.Close()
+
+	bar := progressbar.DefaultBytes(
+		f.Size,
+		f.Path,
+	)
+	defer bar.Close()
+
+	hash := sha256.New()
+	_, err = io.Copy(io.MultiWriter(hash, bar), fo)
+	if err != nil {
+		return err
+	}
+	f.Sha256 = fmt.Sprintf("%X", hash.Sum(nil))
+	return nil
+}
+
+func Diff(a, b File) bool {
+	return a.IsDir != b.IsDir ||
+		a.Size != b.Size ||
+		a.Sha256 != b.Sha256
 }

@@ -46,7 +46,7 @@ func main() {
 				for i := range s.Files {
 					f := &s.Files[i]
 					if !f.IsDir {
-						f.Hash()
+						f.HashProgress()
 					}
 				}
 			}
