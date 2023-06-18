@@ -4,7 +4,7 @@
 		{
 			"path": ,
 			"dir": false,
-			"chmod": 0,
+			"mode": 0,
 			"modified": "0001-01-01T00:00:00Z"
 		}
 	]

@@ -45,7 +45,8 @@ func main() {
 				}
 				for i := range s.Files {
 					f := &s.Files[i]
-					if !f.IsDir {
+					if !f.IsDir && !f.IsSymlink {
+						fmt.Println(f.Path)
 						f.HashProgress()
 					}
 				}
@@ -53,7 +54,7 @@ func main() {
 			for i := range s.Files {
 				f := &s.Files[i]
 				fmt.Printf("\t\t%s\n", f.Path)
-				if !f.IsDir {
+				if !f.IsDir && !f.IsSymlink {
 					fmt.Printf("\t\t\t%s\n", f.Sha256)
 				}
 			}

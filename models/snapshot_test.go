@@ -102,7 +102,7 @@ func TestSnapshotLoadFilesInfo(t *testing.T) {
 	if err != nil {
 		t.Errorf("LoadFilesInfo error %v", err)
 	}
-	if s.Files[0].Chmod == 0 {
+	if s.Files[0].Mode == 0 {
 		t.Errorf("file is not load %v", s.Files[0])
 	}
 }
@@ -159,10 +159,10 @@ func TestSnapshotLoadCache(t *testing.T) {
 	want := Snapshot{
 		Path: "testdata/snapshot/GMT+01_2023-05-08_1034",
 		Files: Files{
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini", IsDir: false, Chmod: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
 		}}
 	_ = want
 	if s.Path != want.Path {
