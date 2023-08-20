@@ -2,6 +2,8 @@ package models
 
 import (
 	"os"
+	"reflect"
+	"snapshot-diff/utils"
 	"testing"
 )
 
@@ -12,17 +14,17 @@ func TestLoadVolumes(t *testing.T) {
 		t.Errorf("error %v", err)
 	}
 
-	want := Volumes{{SnapshotsPath: "../testdata/snapshot"}}
-
-	// if reflect.DeepEqual(want, got) {
-	// 	t.Errorf("got %v, wanted %v", got, want)
-	// }
-	if len(got) != len(want) {
-		t.Errorf("got %v, wanted %v", len(got), len(want))
+	want := Volumes{
+		"snapshot": {SnapshotsPath: "../testdata/snapshot"},
 	}
-	for i, v := range got {
-		if v.SnapshotsPath != want[i].SnapshotsPath {
-			t.Errorf("got %v wanted %v", v.SnapshotsPath, want[i].SnapshotsPath)
+
+	if !reflect.DeepEqual(utils.MapKeys(got), utils.MapKeys(want)) {
+		t.Errorf("got %v, wanted %v", utils.MapKeys(got), utils.MapKeys(want))
+	}
+
+	for k, v := range got {
+		if v.SnapshotsPath != want[k].SnapshotsPath {
+			t.Errorf("got %v wanted %v", v.SnapshotsPath, want[k].SnapshotsPath)
 		}
 	}
 }

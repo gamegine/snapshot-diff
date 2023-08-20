@@ -12,7 +12,7 @@ type Volume struct {
 	Snapshots     Snapshots
 }
 
-type Volumes []Volume
+type Volumes map[string]Volume
 
 func contain(v Volume, snapshotsPath string) bool {
 	for _, s := range v.Snapshots {
@@ -40,14 +40,15 @@ func (v *Volume) UpdateSnapshotsList() error {
 var SnapshotsPath = "/mnt/snapshot/export/Unified-Snapshot/"
 
 func LoadVolumes() (Volumes, error) {
-	var v Volumes
+	v := make(Volumes)
 	entries, err := os.ReadDir(SnapshotsPath)
 	if err != nil {
 		return nil, err
 	}
 	for _, e := range entries {
 		if e.IsDir() {
-			v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
+			v[e.Name()] = Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())}
+			// v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
 		}
 	}
 	return v, nil
