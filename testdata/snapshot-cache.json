@@ -1,26 +1,14 @@
 {
-	"path": "testdata/snapshot/GMT+01_2023-05-08_1034",
+	"path": "testdata/volume/snapshot",
 	"files": [
 		{
-			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension",
-			"dir": false,
+			"path": "testdata/volume/snapshot/snapshots",
+			"dir": true,
 			"mode": 0,
 			"modified": "0001-01-01T00:00:00Z"
 		},
 		{
-			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots",
-			"dir": false,
-			"mode": 0,
-			"modified": "0001-01-01T00:00:00Z"
-		},
-		{
-			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle",
-			"dir": false,
-			"mode": 0,
-			"modified": "0001-01-01T00:00:00Z"
-		},
-		{
-			"path": "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini",
+			"path": "testdata/volume/snapshot/snapshots/test.txt",
 			"dir": false,
 			"mode": 0,
 			"modified": "0001-01-01T00:00:00Z"

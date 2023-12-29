@@ -7,17 +7,14 @@ import (
 )
 
 func TestSnapshotLoadFiles(t *testing.T) {
-	var got = Snapshot{Path: "../testdata/snapshot/GMT+01_2023-05-08_1140/"}
+	var got = Snapshot{Path: "../testdata/volume/snapshot"}
 	err := got.LoadFiles()
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
 	paths := []string{
-		"../testdata/snapshot/GMT+01_2023-05-08_1140/.qextension",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140/snapshots",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140/snapshots/@Recycle",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140/snapshots/@Recycle/desktop.ini",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140/snapshots/test.txt",
+		"../testdata/volume/snapshot/snapshots",
+		"../testdata/volume/snapshot/snapshots/test.txt",
 	}
 
 	if len(paths) != len(got.Files) {
@@ -42,7 +39,7 @@ func TestSnapshotLoadFiles(t *testing.T) {
 
 func TestSnapshotLoadFilesAlreadyloaded(t *testing.T) {
 	var got = Snapshot{
-		Path:  "../testdata/snapshot/GMT+01_2023-05-08_1140/",
+		Path:  "../testdata/volume/snapshot/",
 		Files: Files{File{Path: "file"}},
 	}
 	err := got.LoadFiles()
@@ -60,16 +57,14 @@ func TestSnapshotLoadFilesAlreadyloaded(t *testing.T) {
 }
 
 func TestSnapshotLoadFilesSymlink(t *testing.T) {
-	var got = Snapshot{Path: "../testdata/snapshot/symlink"}
+	var got = Snapshot{Path: "../testdata/volume/symlink"}
 	err := got.LoadFiles()
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
 	want := []string{
-		"../testdata/snapshot/GMT+01_2023-05-08_1034/.qextension",
-		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots",
-		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle",
-		"../testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini",
+		"../testdata/volume/snapshot/snapshots",
+		"../testdata/volume/snapshot/snapshots/test.txt",
 	}
 
 	if len(want) != len(got.Files) {
@@ -120,9 +115,9 @@ func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
 }
 
 func TestSnapshotCacheFilePath(t *testing.T) {
-	s := Snapshot{Path: "testdata/snapshot/GMT+01_2023-05-08_1034"}
+	s := Snapshot{Path: "testdata/volume/snapshot"}
 	got := s.CacheFilePath("cache")
-	want := "cache/GMT+01_2023-05-08_1034.json"
+	want := "cache/snapshot.json"
 
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
@@ -158,14 +153,11 @@ func TestSnapshotLoadCache(t *testing.T) {
 
 	T, _ := time.Parse(time.RFC3339, "0001-01-01T00:00:00Z")
 	want := Snapshot{
-		Path: "testdata/snapshot/GMT+01_2023-05-08_1034",
+		Path: "testdata/volume/snapshot",
 		Files: Files{
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/.qextension", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/snapshot/GMT+01_2023-05-08_1034/snapshots/@Recycle/desktop.ini", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/volume/snapshot/snapshots", IsDir: true, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "testdata/volume/snapshot/snapshots/test.txt", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
 		}}
-	_ = want
 	if s.Path != want.Path {
 		t.Errorf("got %v, wanted %v", s, want)
 	}
@@ -197,9 +189,9 @@ func TestSnapshotLoadCacheWithJsonErr(t *testing.T) {
 }
 
 func TestSnapshotName(t *testing.T) {
-	s := Snapshot{Path: "testdata/snapshot/GMT+01_2023-05-08_1034"}
+	s := Snapshot{Path: "testdata/volume/snapshot"}
 	got := s.Name()
-	want := "GMT+01_2023-05-08_1034"
+	want := "snapshot"
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
 	}

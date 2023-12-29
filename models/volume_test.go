@@ -15,7 +15,7 @@ func TestLoadVolumes(t *testing.T) {
 	}
 
 	want := Volumes{
-		"snapshot": {SnapshotsPath: "../testdata/snapshot"},
+		"volume": {SnapshotsPath: "../testdata/volume"},
 	}
 
 	if !reflect.DeepEqual(utils.MapKeys(got), utils.MapKeys(want)) {
@@ -56,18 +56,14 @@ func TestVolumeContain(t *testing.T) {
 }
 
 func TestVolumeUpdateSnapshotsList(t *testing.T) {
-	var got = Volume{SnapshotsPath: "../testdata/snapshot"}
+	var got = Volume{SnapshotsPath: "../testdata/volume"}
 	err := got.UpdateSnapshotsList()
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
 	want := []string{
-		"../testdata/snapshot/GMT+01_2023-05-08_1034",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140",
-		"../testdata/snapshot/GMT+01_2023-05-08_1142",
-		"../testdata/snapshot/GMT+01_2023-05-08_1144",
-		"../testdata/snapshot/GMT+01_2023-05-08_1145",
-		"../testdata/snapshot/symlink",
+		"../testdata/volume/snapshot",
+		"../testdata/volume/symlink",
 	}
 
 	if len(got.Snapshots) != len(want) {
@@ -83,10 +79,10 @@ func TestVolumeUpdateSnapshotsList(t *testing.T) {
 
 func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
 	var got = Volume{
-		SnapshotsPath: "../testdata/snapshot",
+		SnapshotsPath: "../testdata/volume",
 		Snapshots: Snapshots{
 			Snapshot{
-				Path:  "../testdata/snapshot/GMT+01_2023-05-08_1034",
+				Path:  "../testdata/volume/snapshot",
 				Files: Files{File{}},
 			},
 		},
@@ -96,12 +92,8 @@ func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
 		t.Errorf("error %v", err)
 	}
 	want := []string{
-		"../testdata/snapshot/GMT+01_2023-05-08_1034",
-		"../testdata/snapshot/GMT+01_2023-05-08_1140",
-		"../testdata/snapshot/GMT+01_2023-05-08_1142",
-		"../testdata/snapshot/GMT+01_2023-05-08_1144",
-		"../testdata/snapshot/GMT+01_2023-05-08_1145",
-		"../testdata/snapshot/symlink",
+		"../testdata/volume/snapshot",
+		"../testdata/volume/symlink",
 	}
 
 	if len(got.Snapshots) != len(want) {
@@ -112,7 +104,7 @@ func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
 		if s.Path != want[i] {
 			t.Errorf("got %v wanted %v", s.Path, want[i])
 		}
-		if s.Path == "../testdata/snapshot/GMT+01_2023-05-08_1034" {
+		if s.Path == "../testdata/volume/snapshot" {
 			if len(s.Files) != 1 {
 				t.Errorf("existing snapshot data was erased %v", s)
 			}
