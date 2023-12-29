@@ -101,3 +101,11 @@ func (s *Snapshot) Name() string {
 	str := strings.Split(s.Path, "/")
 	return str[len(str)-1]
 }
+
+func (s *Snapshot) ToMap() map[string]File {
+	files := make(map[string]File)
+	for _, f := range s.Files {
+		files[f.Path] = f
+	}
+	return files
+}

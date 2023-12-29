@@ -1,6 +1,7 @@
 package models
 
 import (
+	"reflect"
 	"testing"
 	"time"
 )
@@ -200,6 +201,21 @@ func TestSnapshotName(t *testing.T) {
 	got := s.Name()
 	want := "GMT+01_2023-05-08_1034"
 	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestSnapshotToMap(t *testing.T) {
+	s := Snapshot{Files: []File{
+		{Path: "./file.go"},
+		{Path: "./undef"},
+	}}
+	want := map[string]File{
+		"rsc": {Path: "./file.go"},
+		"r":   {Path: "./undef"},
+	}
+	got := s.ToMap()
+	if reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, wanted %v", got, want)
 	}
 }
