@@ -9,11 +9,11 @@ snapshot-diff is tool for compare two snapshots and find out what file had been 
 
 ## :pushpin: Features
 
-- [ ] list volumes & snapshots
+- [x] list volumes & snapshots
 - [ ] compare two snapshots (timestamp/size)
-- [ ] hash snapshots files
+- [x] hash snapshots files
 - [ ] compare two snapshots (hash)
-- [ ] cache snapshots hash
+- [x] cache snapshots hash
 - [ ] export files hash
 - [ ] background compute new snapshots hash
 
