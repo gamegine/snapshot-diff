@@ -37,24 +37,6 @@ func TestLoadVolumesWithErr(t *testing.T) {
 	}
 }
 
-func TestVolumeContain(t *testing.T) {
-	var vol = Volume{
-		Snapshots: Snapshots{
-			Snapshot{Path: "a"},
-			Snapshot{Path: "c"},
-		},
-	}
-	if !contain(vol, "a") {
-		t.Errorf("a not in vol[a,c], wanted yes")
-	}
-	if contain(vol, "b") {
-		t.Errorf("b in vol[a,c], wanted yes")
-	}
-	if !contain(vol, "c") {
-		t.Errorf("c not in vol[a,c], wanted yes")
-	}
-}
-
 func TestVolumeUpdateSnapshotsList(t *testing.T) {
 	var got = Volume{SnapshotsPath: "../testdata/volume"}
 	err := got.UpdateSnapshotsList()
@@ -62,17 +44,19 @@ func TestVolumeUpdateSnapshotsList(t *testing.T) {
 		t.Errorf("error %v", err)
 	}
 	want := []string{
-		"../testdata/volume/snapshot",
-		"../testdata/volume/symlink",
+		"snapshot",
+		"symlink",
 	}
-
 	if len(got.Snapshots) != len(want) {
 		t.Errorf("got %v, wanted %v", len(got.Snapshots), len(want))
 		return
 	}
-	for i, s := range got.Snapshots {
-		if s.Path != want[i] {
-			t.Errorf("got %v wanted %v", s.Path, want[i])
+	for _, s := range want {
+		if !utils.MapContains(got.Snapshots, s) {
+			t.Errorf("got %v wanted %v", utils.MapKeys(got.Snapshots), s)
+		}
+		if got.Snapshots[s].Path != "../testdata/volume/"+s {
+			t.Errorf("got %v wanted ../testdata/volume/%v", got.Snapshots[s].Path, s)
 		}
 	}
 }
@@ -81,9 +65,9 @@ func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
 	var got = Volume{
 		SnapshotsPath: "../testdata/volume",
 		Snapshots: Snapshots{
-			Snapshot{
+			"snapshot": Snapshot{
 				Path:  "../testdata/volume/snapshot",
-				Files: Files{File{}},
+				Files: Files{File{Path: "test"}},
 			},
 		},
 	}
@@ -92,26 +76,29 @@ func TestVolumeUpdateSnapshotsListWithExistingSnapshot(t *testing.T) {
 		t.Errorf("error %v", err)
 	}
 	want := []string{
-		"../testdata/volume/snapshot",
-		"../testdata/volume/symlink",
+		"snapshot",
+		"symlink",
 	}
-
 	if len(got.Snapshots) != len(want) {
 		t.Errorf("got %v, wanted %v", len(got.Snapshots), len(want))
 		return
 	}
-	for i, s := range got.Snapshots {
-		if s.Path != want[i] {
-			t.Errorf("got %v wanted %v", s.Path, want[i])
+	for _, s := range want {
+		if !utils.MapContains(got.Snapshots, s) {
+			t.Errorf("got %v wanted %v", utils.MapKeys(got.Snapshots), s)
 		}
-		if s.Path == "../testdata/volume/snapshot" {
-			if len(s.Files) != 1 {
-				t.Errorf("existing snapshot data was erased %v", s)
-			}
+		if got.Snapshots[s].Path != "../testdata/volume/"+s {
+			t.Errorf("got %v wanted ../testdata/volume/%v", got.Snapshots[s].Path, s)
 		}
 	}
+	// snapshot data not deleted
+	if len(got.Snapshots["snapshot"].Files) != 1 {
+		t.Errorf("got %v wanted %v", len(got.Snapshots["snapshot"].Files), 1)
+	}
+	if got.Snapshots["snapshot"].Files[0].Path != "test" {
+		t.Errorf("got %v wanted %v", got.Snapshots["snapshot"].Files[0].Path, "test")
+	}
 }
-
 func TestVolumeUpdateSnapshotsListWithErr(t *testing.T) {
 	var v = Volume{SnapshotsPath: "./undef"}
 	err := v.UpdateSnapshotsList()

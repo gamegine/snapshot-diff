@@ -30,7 +30,7 @@ func main() {
 		}
 		fmt.Printf(" - volume %s, %d snapshots\n", volume.Name(), len(volume.Snapshots))
 		for snapshotIndex := range volume.Snapshots {
-			snapshot := &volume.Snapshots[snapshotIndex]
+			snapshot := volume.Snapshots[snapshotIndex]
 			fmt.Printf("\tsnapshot: %s \n\t\tpath: %s\n\t\tcache: %s\n", snapshot.Name(), snapshot.Path, snapshot.CacheFilePath(CacheDirPath))
 			cacheErr := snapshot.LoadCache(snapshot.CacheFilePath(CacheDirPath))
 			if cacheErr != nil {
@@ -63,6 +63,7 @@ func main() {
 			if err != nil {
 				fmt.Println(err)
 			}
+			volume.Snapshots[snapshotIndex] = snapshot
 		}
 		volumes[volumeIndex] = volume
 	}

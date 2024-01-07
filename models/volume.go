@@ -4,6 +4,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"snapshot-diff/utils"
 	"strings"
 )
 
@@ -14,24 +15,19 @@ type Volume struct {
 
 type Volumes map[string]Volume
 
-func contain(v Volume, snapshotsPath string) bool {
-	for _, s := range v.Snapshots {
-		if s.Path == snapshotsPath {
-			return true
-		}
-	}
-	return false
-}
-
 func (v *Volume) UpdateSnapshotsList() error {
 	entries, err := os.ReadDir(v.SnapshotsPath)
 	if err != nil {
 		return err
 	}
+	// Check if a map is initialised
+	if v.Snapshots == nil {
+		v.Snapshots = make(Snapshots)
+	}
 	// entries = RemoveFiles(entries) // symlink
 	for _, e := range entries {
-		if !contain(*v, filepath.Join(v.SnapshotsPath, e.Name())) {
-			v.Snapshots = append(v.Snapshots, Snapshot{Path: filepath.Join(v.SnapshotsPath, e.Name())})
+		if !utils.MapContains(v.Snapshots, e.Name()) {
+			v.Snapshots[e.Name()] = Snapshot{Path: filepath.Join(v.SnapshotsPath, e.Name())}
 		}
 	}
 	return nil
@@ -48,7 +44,6 @@ func LoadVolumes() (Volumes, error) {
 	for _, e := range entries {
 		if e.IsDir() {
 			v[e.Name()] = Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())}
-			// v = append(v, Volume{SnapshotsPath: filepath.Join(SnapshotsPath, e.Name())})
 		}
 	}
 	return v, nil

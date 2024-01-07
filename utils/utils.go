@@ -13,6 +13,13 @@ func MapKeys[M ~map[K]V, K comparable, V any](m M) []K {
 	return keys
 }
 
+func MapContains[M ~map[K]V, K comparable, V any](m M, key K) bool {
+	if _, ok := m[key]; ok {
+		return true
+	}
+	return false
+}
+
 // [d b a] [a b c] -> [a b c d]
 func MergeUniqueSort(s1 []string, s2 []string) []string {
 	// merge slices

@@ -20,6 +20,23 @@ func TestMapKeys(t *testing.T) {
 	}
 }
 
+func TestMapContains(t *testing.T) {
+	m := map[string]int{
+		"a": 1,
+		"c": 2,
+		"e": 4,
+	}
+	if !MapContains(m, "a") {
+		t.Errorf("%v find %v, wanted %v", m, "a", true)
+	}
+	if MapContains(m, "b") {
+		t.Errorf("%v find %v, wanted %v", m, "b", false)
+	}
+	if !MapContains(m, "c") {
+		t.Errorf("%v find %v, wanted %v", m, "c", true)
+	}
+}
+
 func TestMergeUniqueSort(t *testing.T) {
 	a := []string{"a", "c", "e"}
 	b := []string{"a", "b", "d", "e"}

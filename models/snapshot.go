@@ -15,7 +15,7 @@ type Snapshot struct {
 	Files Files  `json:"files"`
 }
 
-type Snapshots []Snapshot
+type Snapshots map[string]Snapshot
 
 func (s *Snapshot) LoadFiles() error {
 	if len(s.Files) != 0 { // not load already loaded
