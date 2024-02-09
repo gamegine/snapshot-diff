@@ -2,18 +2,14 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"snapshot-diff/config"
 	"snapshot-diff/models"
 	"snapshot-diff/utils"
 )
 
 func main() {
-	{
-		_, present := os.LookupEnv("test")
-		if present {
-			models.SnapshotsPath = "testdata/"
-		}
-	}
+	config.Config()
+
 	volumes, err := models.LoadVolumes()
 	if err != nil {
 		fmt.Printf("Error LoadVolumes: %v\n", err)
