@@ -4,3 +4,16 @@
 GET {{baseUrl}}/ping
 
 ###
+
+#
+GET {{baseUrl}}/volumes
+
+###
+
+#
+GET {{baseUrl}}/volumes/volume
+###
+
+#
+GET {{baseUrl}}/volumes/volume/snapshot
+###
