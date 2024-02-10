@@ -9,7 +9,7 @@
 	// "features": {},
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	// "forwardPorts": [],
+	"forwardPorts": [8080],
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	"postCreateCommand": "sudo apt update && sudo apt install bash-completion",
@@ -21,5 +21,13 @@
 	// "remoteUser": "root"
 	"containerEnv": {
 		"test": "1"
+	},
+
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"humao.rest-client"
+			]
+		}
 	}
 }
