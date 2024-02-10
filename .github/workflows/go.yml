@@ -31,17 +31,25 @@ jobs:
         go vet ./...
 
     - name: Unit tests
-      run: go test -v ./... -coverprofile=coverage.out -covermode=count
-    - name: fix coverage.out paths (_/home... -> ./)
+      run: go test -v ./... -coverprofile=cover.out -covermode=count
+    - name: fix cover.out paths (_/home... -> ./)
       run: |
-        cat coverage.out
-        sed -i "s#_$(pwd)#.#g" coverage.out
-        cat coverage.out
+        cat cover.out
+        sed -i "s#_$(pwd)#.#g" cover.out
+        cat cover.out
     - name: publish Go test results coverage
       uses: actions/upload-artifact@v4
       with:
         name: code covarege report
-        path: coverage.out
+        path: cover.out
+
+    - name: coverage.html
+      run: go tool cover -html cover.out -o cover.html
+    - name: publish Go test results coverage
+      uses: actions/upload-artifact@v4
+      with:
+        name: code covarege report html
+        path: cover.html
 
     # https://medium.com/synechron/how-to-set-up-a-test-coverage-threshold-in-go-and-github-167f69b940dc
     - name: Quality Gate - Test coverage shall be above threshold
@@ -50,7 +58,7 @@ jobs:
       run: |
             echo "Quality Gate: checking test coverage is above threshold ..."
             echo "Threshold             : $TESTCOVERAGE_THRESHOLD %"
-            totalCoverage=`go tool cover -func=coverage.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
+            totalCoverage=`go tool cover -func=cover.out | grep total | grep -Eo '[0-9]+\.[0-9]+'`
             echo "Current test coverage : $totalCoverage %"
             if (( $(echo "$totalCoverage $TESTCOVERAGE_THRESHOLD" | awk '{print ($1 >= $2)}') )); then
                 echo "OK"
