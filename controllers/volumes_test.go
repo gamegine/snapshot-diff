@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"snapshot-diff/models"
@@ -17,6 +16,7 @@ func JSONString(j any) string {
 }
 
 func TestControllerGetVolumes(t *testing.T) {
+	gin.SetMode(gin.TestMode)
 	// Anonymous struct of test cases
 	tests := []struct {
 		name         string
@@ -42,7 +42,7 @@ func TestControllerGetVolumes(t *testing.T) {
 		// each test case from  table above run as a subtest
 		t.Run(TestCase.name, func(t *testing.T) {
 			Volumes = TestCase.Volumes
-			r := gin.Default()
+			r := gin.New()
 			r.GET("/volumes", GetVolumes)
 
 			w := httptest.NewRecorder()
@@ -56,11 +56,11 @@ func TestControllerGetVolumes(t *testing.T) {
 				t.Errorf("got %v, wanted %v", w.Body.String(), TestCase.Expected)
 			}
 		})
-		fmt.Println(Volumes)
 	}
 }
 
 func TestControllerGetVolume(t *testing.T) {
+	gin.SetMode(gin.TestMode)
 	// Anonymous struct of test cases
 	tests := []struct {
 		name         string
@@ -82,7 +82,7 @@ func TestControllerGetVolume(t *testing.T) {
 		// each test case from  table above run as a subtest
 		t.Run(TestCase.name, func(t *testing.T) {
 			Volumes = TestCase.Volumes
-			r := gin.Default()
+			r := gin.New()
 			r.GET("/volumes/:volume", GetVolume)
 
 			w := httptest.NewRecorder()
@@ -96,11 +96,11 @@ func TestControllerGetVolume(t *testing.T) {
 				t.Errorf("got %v, wanted %v", w.Body.String(), TestCase.Expected)
 			}
 		})
-		fmt.Println(Volumes)
 	}
 }
 
 func TestControllerGetSnapshot(t *testing.T) {
+	gin.SetMode(gin.TestMode)
 	// Anonymous struct of test cases
 	var s = models.Snapshot{Path: "undefined"} // path undefined for not LoadFiles
 	tests := []struct {
@@ -126,7 +126,7 @@ func TestControllerGetSnapshot(t *testing.T) {
 		// each test case from  table above run as a subtest
 		t.Run(TestCase.name, func(t *testing.T) {
 			Volumes = TestCase.Volumes
-			r := gin.Default()
+			r := gin.New()
 			r.GET("/volumes/:volume/:snapshot", GetSnapshot)
 
 			w := httptest.NewRecorder()
@@ -140,6 +140,5 @@ func TestControllerGetSnapshot(t *testing.T) {
 				t.Errorf("got %v, wanted %v", w.Body.String(), TestCase.Expected)
 			}
 		})
-		fmt.Println(Volumes)
 	}
 }
