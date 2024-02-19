@@ -211,3 +211,55 @@ func TestSnapshotToMap(t *testing.T) {
 		t.Errorf("got %v, wanted %v", got, want)
 	}
 }
+func TestSnapshotLoadCacheOrFiles(t *testing.T) {
+	tests := []struct {
+		name          string
+		snapshotPath  string
+		cache         string
+		Expected      int
+		ExpectedError bool
+	}{
+		{
+			name:          "load cache",
+			snapshotPath:  "../testdata/volume/snapshot",
+			cache:         "../testdata/snapshot-cache.json",
+			Expected:      2,
+			ExpectedError: false,
+		},
+		{
+			name:          "load files",
+			snapshotPath:  "../testdata/volume/snapshot",
+			cache:         "undef",
+			Expected:      2,
+			ExpectedError: false,
+		},
+		{
+			name:          "load error",
+			snapshotPath:  "undef",
+			cache:         "undef",
+			Expected:      0,
+			ExpectedError: true,
+		},
+	}
+
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			s := Snapshot{Path: TestCase.snapshotPath}
+			err := s.LoadCacheOrFiles(TestCase.cache)
+
+			// error
+			if err != nil && !TestCase.ExpectedError {
+				t.Errorf("got error %v", err)
+			}
+			if err == nil && TestCase.ExpectedError {
+				t.Error("expected error not present")
+			}
+
+			// test only if load files not files data (tested in LoadFiles/LoadCache)
+			if len(s.Files) != TestCase.Expected {
+				t.Errorf("got %v, wanted %v", len(s.Files), TestCase.Expected)
+			}
+		})
+	}
+}

@@ -97,6 +97,14 @@ func (s *Snapshot) LoadCache(path string) error {
 	return nil
 }
 
+func (s *Snapshot) LoadCacheOrFiles(path string) error {
+	err := s.LoadCache(path)
+	if err == nil {
+		return nil
+	}
+	return s.LoadFiles()
+}
+
 func (s *Snapshot) Name() string {
 	str := strings.Split(s.Path, "/")
 	return str[len(str)-1]
