@@ -45,7 +45,8 @@ func (f *File) Load() error {
 }
 
 func IsSpecialFile(f File) bool {
-	return f.Mode&fs.ModeSocket == fs.ModeSocket ||
+	return f.IsDir || // IsSpecialFile is used avoid hash, we cannot hash a folder
+		f.Mode&fs.ModeSocket == fs.ModeSocket ||
 		f.Mode&fs.ModeNamedPipe == fs.ModeNamedPipe
 }
 

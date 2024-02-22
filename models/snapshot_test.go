@@ -1,6 +1,7 @@
 package models
 
 import (
+	"io/fs"
 	"reflect"
 	"testing"
 	"time"
@@ -259,6 +260,62 @@ func TestSnapshotLoadCacheOrFiles(t *testing.T) {
 			// test only if load files not files data (tested in LoadFiles/LoadCache)
 			if len(s.Files) != TestCase.Expected {
 				t.Errorf("got %v, wanted %v", len(s.Files), TestCase.Expected)
+			}
+		})
+	}
+}
+
+func TestSnapshotIsHash(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		snapshot Snapshot
+		Expected bool
+	}{
+		{
+			name: "hash",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go", Sha256: "test"},
+			}},
+			Expected: true,
+		},
+		{
+			name: "not hash",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go"},
+			}},
+			Expected: false,
+		},
+		{
+			name: "partial hash",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go", Sha256: "test"},
+				{Path: "./file2.go"},
+			}},
+			Expected: false,
+		},
+		{
+			name: "special file",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go", Mode: fs.ModeSocket},
+			}},
+			Expected: true,
+		},
+		{
+			name: "directory",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./", IsDir: true},
+			}},
+			Expected: true,
+		},
+	}
+
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			got := TestCase.snapshot.IsHash()
+			if got != TestCase.Expected {
+				t.Errorf("got %v, wanted %v", got, TestCase.Expected)
 			}
 		})
 	}
