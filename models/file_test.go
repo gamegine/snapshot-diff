@@ -7,7 +7,21 @@ import (
 	"time"
 )
 
-func TestNewFile(t *testing.T) {
+func TestLoadFileInfo(t *testing.T) {
+	fi, err := os.Stat("./file.go")
+	if err != nil {
+		t.Errorf("error %v", err)
+	}
+	want := File{Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
+
+	var got = File{Path: "./file.go"}
+	got.LoadFileInfo(fi)
+	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestLoadFile(t *testing.T) {
 	var got = File{Path: "./file.go"}
 	err := got.Load()
 	if err != nil {
@@ -25,7 +39,7 @@ func TestNewFile(t *testing.T) {
 	}
 }
 
-func TestNewFileWithErr(t *testing.T) {
+func TestLoadFileWithErr(t *testing.T) {
 	var f = File{Path: "./undef"}
 	err := f.Load()
 	if err == nil {
