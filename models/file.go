@@ -23,12 +23,7 @@ type File struct {
 
 type Files []File
 
-func (f *File) Load() error {
-	fileInfo, err := os.Lstat(f.Path)
-	if err != nil {
-		return err
-
-	}
+func (f *File) LoadFileInfo(fileInfo os.FileInfo) {
 	*f = File{
 		Path:      f.Path,
 		IsDir:     fileInfo.IsDir(),
@@ -37,6 +32,15 @@ func (f *File) Load() error {
 		Size:      fileInfo.Size(),
 		ModifTime: fileInfo.ModTime(),
 	}
+}
+
+func (f *File) Load() error {
+	fileInfo, err := os.Lstat(f.Path)
+	if err != nil {
+		return err
+
+	}
+	f.LoadFileInfo(fileInfo)
 	return nil
 }
 
