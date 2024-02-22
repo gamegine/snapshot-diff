@@ -28,27 +28,20 @@ func main() {
 		for snapshotIndex := range volume.Snapshots {
 			snapshot := volume.Snapshots[snapshotIndex]
 			fmt.Printf("\tsnapshot: %s \n\t\tpath: %s\n\t\tcache: %s\n", snapshot.Name(), snapshot.Path, snapshot.CacheFilePath(CacheDirPath))
-			cacheErr := snapshot.LoadCache(snapshot.CacheFilePath(CacheDirPath))
-			if cacheErr != nil {
-				fmt.Println("LoadFiles")
-				err = snapshot.LoadFiles()
-				if err != nil {
-					fmt.Printf("Error Snapshots.LoadFiles: %v\n", err)
-					return
-				}
-				err = snapshot.LoadFilesInfo()
-				if err != nil {
-					fmt.Printf("Error Snapshots.LoadFilesInfo: %v\n", err)
-					return
-				}
-				for i := range snapshot.Files {
-					f := &snapshot.Files[i]
-					if !f.IsDir && !f.IsSymlink {
-						fmt.Println(f.Path)
-						f.HashProgress()
-					}
+			err = snapshot.LoadCacheOrFiles(snapshot.CacheFilePath(CacheDirPath))
+			if err != nil {
+				fmt.Printf("Error Snapshots.LoadCacheOrFiles: %v\n", err)
+				return
+			}
+			// Hash
+			for i := range snapshot.Files {
+				f := &snapshot.Files[i]
+				if f.Sha256 == "" && !models.IsSpecialFile(*f) {
+					fmt.Println(f.Path)
+					f.HashProgress()
 				}
 			}
+			// Print
 			for _, f := range snapshot.Files {
 				fmt.Printf("\t\t\t%s\n", f.Path)
 				if !f.IsDir && !f.IsSymlink {
