@@ -119,3 +119,14 @@ func (s *Snapshot) ToMap() map[string]File {
 	}
 	return files
 }
+
+func (s *Snapshot) IsHash() bool {
+	for _, f := range s.Files {
+		if f.Sha256 == "" {
+			if !IsSpecialFile(f) {
+				return false
+			}
+		}
+	}
+	return true
+}

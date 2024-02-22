@@ -56,6 +56,12 @@ func TestIsSpecialFile(t *testing.T) {
 	if IsSpecialFile(f) {
 		t.Errorf("LICENSE is not special file")
 	}
+	f.IsDir = true
+	if !IsSpecialFile(f) {
+		t.Errorf("is folder")
+	}
+	f.IsDir = false
+
 	m := f.Mode
 	f.Mode |= fs.ModeSocket
 	if !IsSpecialFile(f) {
