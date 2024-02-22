@@ -44,7 +44,9 @@ func (s *Snapshot) LoadFiles() error {
 				// 	return nil
 				// }
 			}
-			s.Files = append(s.Files, File{Path: path})
+			f := File{Path: path}
+			f.LoadFileInfo(info)
+			s.Files = append(s.Files, f)
 			return nil
 		})
 	if err != nil {
