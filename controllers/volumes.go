@@ -32,8 +32,11 @@ func GetSnapshot(c *gin.Context) {
 	volume := c.Param("volume")
 	snapshot := c.Param("snapshot")
 	{
-		s := Volumes[volume].Snapshots[snapshot]
-		s.LoadFiles()
+		v := Volumes[volume]
+		CacheDirPath := v.CacheDir()
+
+		s := v.Snapshots[snapshot]
+		s.LoadCacheOrFiles(s.CacheFilePath(CacheDirPath))
 		Volumes[volume].Snapshots[snapshot] = s
 	}
 	c.JSON(200, Volumes[volume].Snapshots[snapshot])
