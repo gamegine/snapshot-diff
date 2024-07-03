@@ -11,21 +11,31 @@ import (
 
 type Snapshot struct {
 	// Name  string `json:"name"`
-	Path  string `json:"path"`
+	Path  string `json:"opath"`
+	ResolvePath string `json:"rpath"`
 	Files Files  `json:"files"`
 }
 
 type Snapshots map[string]Snapshot
 
-func (s *Snapshot) LoadFiles() error {
-	if len(s.Files) != 0 { // not load already loaded
-		return nil
-	}
+func (s *Snapshot) EvalSymlinks() error {
 	resolvePath, err := filepath.EvalSymlinks(s.Path)
 	if err != nil {
 		return err
 	}
-	err = filepath.Walk(resolvePath,
+	s.ResolvePath = resolvePath
+	return nil
+}
+
+func (s *Snapshot) LoadFiles() error {
+	if len(s.Files) != 0 { // not load already loaded
+		return nil
+	}
+	err := s.EvalSymlinks()
+	if err != nil {
+		return err
+	}
+	err = filepath.Walk(s.ResolvePath,
 		func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -33,7 +43,7 @@ func (s *Snapshot) LoadFiles() error {
 			// skip patern
 			{
 				// skip snapshots dir (./)
-				if path == resolvePath {
+				if path == s.ResolvePath {
 					return nil
 				}
 				// var reg = regexp.MustCompile(`@Recently-Snapshot|@Recycle`)
@@ -44,7 +54,11 @@ func (s *Snapshot) LoadFiles() error {
 				// 	return nil
 				// }
 			}
-			f := File{Path: path}
+			relativePath,err := filepath.Rel(s.ResolvePath,path)
+			if err != nil {
+				return err
+			}
+			f := File{APath: path,Path:relativePath}
 			f.LoadFileInfo(info)
 			s.Files = append(s.Files, f)
 			return nil
@@ -92,6 +106,9 @@ func (s *Snapshot) LoadCache(path string) error {
 	}
 	// unmarshal
 	err = json.Unmarshal(content, &s)
+	for i := range s.Files{
+		s.Files[i].APath = filepath.Join(s.ResolvePath,s.Files[i].Path)
+	}
 	if err != nil {
 		// Error during Unmarshal
 		return err

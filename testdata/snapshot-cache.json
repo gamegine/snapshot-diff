@@ -1,14 +1,15 @@
 {
-	"path": "testdata/volume/snapshot",
+	"opath": "testdata/volume/snapshot",
+	"rpath": "testdata/volume/snapshot",
 	"files": [
 		{
-			"path": "testdata/volume/snapshot/snapshots",
+			"path": "snapshots",
 			"dir": true,
 			"mode": 0,
 			"modified": "0001-01-01T00:00:00Z"
 		},
 		{
-			"path": "testdata/volume/snapshot/snapshots/test.txt",
+			"path": "snapshots/test.txt",
 			"dir": false,
 			"mode": 0,
 			"modified": "0001-01-01T00:00:00Z"

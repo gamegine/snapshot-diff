@@ -13,6 +13,7 @@ import (
 
 type File struct {
 	Path      string      `json:"path"`
+	APath     string      `json:"-"`
 	IsDir     bool        `json:"dir"`
 	IsSymlink bool        `json:"symlink"`
 	Sha256    string      `json:"sha256,omitempty"`
@@ -26,6 +27,7 @@ type Files []File
 func (f *File) LoadFileInfo(fileInfo os.FileInfo) {
 	*f = File{
 		Path:      f.Path,
+		APath:     f.APath,
 		IsDir:     fileInfo.IsDir(),
 		IsSymlink: fileInfo.Mode()&os.ModeSymlink == os.ModeSymlink,
 		Mode:      fileInfo.Mode(),
@@ -35,7 +37,7 @@ func (f *File) LoadFileInfo(fileInfo os.FileInfo) {
 }
 
 func (f *File) Load() error {
-	fileInfo, err := os.Lstat(f.Path)
+	fileInfo, err := os.Lstat(f.APath)
 	if err != nil {
 		return err
 
@@ -54,7 +56,7 @@ func (f *File) Hash() error {
 	if IsSpecialFile(*f) { // skip special files
 		return nil
 	}
-	fo, err := os.Open(f.Path)
+	fo, err := os.Open(f.APath)
 	if err != nil {
 		return err
 	}
@@ -73,7 +75,7 @@ func (f *File) HashProgress() error {
 	if IsSpecialFile(*f) { // skip special files
 		return nil
 	}
-	fo, err := os.Open(f.Path)
+	fo, err := os.Open(f.APath)
 	if err != nil {
 		return err
 	}
