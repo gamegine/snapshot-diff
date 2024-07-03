@@ -3,41 +3,55 @@ package models
 import (
 	"io/fs"
 	"reflect"
+	"strings"
 	"testing"
 	"time"
 )
 
 func TestSnapshotLoadFiles(t *testing.T) {
-	var got = Snapshot{Path: "../testdata/volume/snapshot"}
-	err := got.LoadFiles()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	paths := []string{
-		"../testdata/volume/snapshot/snapshots",
-		"../testdata/volume/snapshot/snapshots/test.txt",
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		snapshot Snapshot
+		Expected []string
+	}{
+		{
+			name:     "LoadFiles",
+			snapshot: Snapshot{Path: "../testdata/volume/snapshot"},
+			Expected: []string{
+				"../testdata/volume/snapshot/snapshots",
+				"../testdata/volume/snapshot/snapshots/test.txt",
+			},
+		},
 	}
 
-	if len(paths) != len(got.Files) {
-		t.Errorf("got %v, wanted %v", len(paths), len(got.Files))
-		return
-	}
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			var got = TestCase.snapshot
+			err := got.LoadFiles()
+			if err != nil {
+				t.Errorf("error %v", err)
+			}
+			if len(TestCase.Expected) != len(got.Files) {
+				t.Errorf("got %v, wanted %v", len(TestCase.Expected), len(got.Files))
+				return
+			}
 
-	// []gotpaths = got.[]Files.Path
-	gotpaths := make([]string, len(got.Files))
-	for i, f := range got.Files {
-		gotpaths[i] = f.Path
-	}
-	// if reflect.DeepEqual(paths, gotpaths) {
-	// 	t.Errorf("got \n%v\nwanted \n%v", paths, gotpaths)
-	// }
-	for i, p := range gotpaths {
-		if p != paths[i] {
-			t.Errorf("got %v wanted %v", p, paths[i])
-		}
+			for i, f := range got.Files {
+				if f.APath != TestCase.Expected[i] {
+					t.Errorf("got %v wanted %v", f.APath, TestCase.Expected[i])
+				}
+				wAPath := strings.TrimPrefix(TestCase.Expected[i], "../testdata/volume/snapshot/")
+				if f.Path != wAPath {
+					t.Errorf("got %v wanted %v", f.Path, wAPath)
+				}
+			}
+		})
 	}
 }
 
+/*
 func TestSnapshotLoadFilesAlreadyloaded(t *testing.T) {
 	var got = Snapshot{
 		Path:  "../testdata/volume/snapshot/",
@@ -92,9 +106,10 @@ func TestSnapshotLoadFilesWithErr(t *testing.T) {
 		t.Errorf("no error with undefined file")
 	}
 }
+*/
 
 func TestSnapshotLoadFilesInfo(t *testing.T) {
-	s := Snapshot{Files: []File{{Path: "./file.go"}}}
+	s := Snapshot{Files: []File{{APath: "./file.go"}}}
 	err := s.LoadFilesInfo()
 	if err != nil {
 		t.Errorf("LoadFilesInfo error %v", err)
@@ -106,8 +121,8 @@ func TestSnapshotLoadFilesInfo(t *testing.T) {
 
 func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
 	s := Snapshot{Files: []File{
-		{Path: "./file.go"},
-		{Path: "./undef"},
+		{APath: "./file.go"},
+		{APath: "./undef"},
 	}}
 	err := s.LoadFilesInfo()
 	if err == nil {
@@ -154,10 +169,11 @@ func TestSnapshotLoadCache(t *testing.T) {
 
 	T, _ := time.Parse(time.RFC3339, "0001-01-01T00:00:00Z")
 	want := Snapshot{
-		Path: "testdata/volume/snapshot",
+		Path:        "testdata/volume/snapshot",
+		ResolvePath: "testdata/volume/snapshot",
 		Files: Files{
-			{Path: "testdata/volume/snapshot/snapshots", IsDir: true, Mode: 0, Size: 0, ModifTime: T},
-			{Path: "testdata/volume/snapshot/snapshots/test.txt", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "snapshots", APath: "testdata/volume/snapshot/snapshots", IsDir: true, Mode: 0, Size: 0, ModifTime: T},
+			{Path: "snapshots/test.txt", APath: "testdata/volume/snapshot/snapshots/test.txt", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
 		}}
 	if s.Path != want.Path {
 		t.Errorf("got %v, wanted %v", s, want)

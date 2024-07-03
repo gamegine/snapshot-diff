@@ -12,9 +12,9 @@ func TestLoadFileInfo(t *testing.T) {
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
-	want := File{Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
+	want := File{APath: "./file.go", Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
 
-	var got = File{Path: "./file.go"}
+	var got = File{APath: "./file.go", Path: "./file.go"}
 	got.LoadFileInfo(fi)
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
@@ -22,7 +22,7 @@ func TestLoadFileInfo(t *testing.T) {
 }
 
 func TestLoadFile(t *testing.T) {
-	var got = File{Path: "./file.go"}
+	var got = File{APath: "./file.go", Path: "./file.go"}
 	err := got.Load()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -32,7 +32,7 @@ func TestLoadFile(t *testing.T) {
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
-	want := File{Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
+	want := File{APath: "./file.go", Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
 
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
@@ -40,7 +40,7 @@ func TestLoadFile(t *testing.T) {
 }
 
 func TestLoadFileWithErr(t *testing.T) {
-	var f = File{Path: "./undef"}
+	var f = File{APath: "./undef", Path: "./undef"}
 	err := f.Load()
 	if err == nil {
 		t.Errorf("no error with undefined file")
@@ -48,7 +48,7 @@ func TestLoadFileWithErr(t *testing.T) {
 }
 
 func TestIsSpecialFile(t *testing.T) {
-	var f = File{Path: "../LICENSE"}
+	var f = File{APath: "../LICENSE"}
 	err := f.Load()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -75,7 +75,7 @@ func TestIsSpecialFile(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	var f = File{Path: "../LICENSE"}
+	var f = File{APath: "../LICENSE"}
 	err := f.Hash()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -88,7 +88,7 @@ func TestHash(t *testing.T) {
 }
 
 func TestHashWithSpecialFile(t *testing.T) {
-	var f = File{Path: "../LICENSE", Mode: fs.ModeSocket}
+	var f = File{APath: "../LICENSE", Mode: fs.ModeSocket}
 	err := f.Hash()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -101,7 +101,7 @@ func TestHashWithSpecialFile(t *testing.T) {
 }
 
 func TestHashWithErr(t *testing.T) {
-	var f = File{Path: "./undef"}
+	var f = File{APath: "./undef"}
 	err := f.Hash()
 	if err == nil {
 		t.Errorf("no error with undefined file")
@@ -109,7 +109,7 @@ func TestHashWithErr(t *testing.T) {
 }
 
 func TestHashProgress(t *testing.T) {
-	var f = File{Path: "../LICENSE"}
+	var f = File{APath: "../LICENSE"}
 	err := f.HashProgress()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -122,7 +122,7 @@ func TestHashProgress(t *testing.T) {
 }
 
 func TestHashProgressWithSpecialFile(t *testing.T) {
-	var f = File{Path: "../LICENSE", Mode: fs.ModeSocket}
+	var f = File{APath: "../LICENSE", Mode: fs.ModeSocket}
 	err := f.HashProgress()
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -135,7 +135,7 @@ func TestHashProgressWithSpecialFile(t *testing.T) {
 }
 
 func TestHashProgressWithErr(t *testing.T) {
-	var f = File{Path: "./undef"}
+	var f = File{APath: "./undef"}
 	err := f.HashProgress()
 	if err == nil {
 		t.Errorf("no error with undefined file")
@@ -143,14 +143,14 @@ func TestHashProgressWithErr(t *testing.T) {
 }
 
 func TestDiff(t *testing.T) {
-	a := File{Path: "./file.txt",
+	a := File{APath: "./file.txt",
 		IsDir:     false,
 		Sha256:    "sha",
 		Mode:      12,
 		Size:      32,
 		ModifTime: time.Now(),
 	}
-	b := File{Path: "./file.txt",
+	b := File{APath: "./file.txt",
 		IsDir:     false,
 		Sha256:    "sha",
 		Mode:      12,
