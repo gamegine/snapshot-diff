@@ -13,15 +13,43 @@ func TestSnapshotLoadFiles(t *testing.T) {
 	tests := []struct {
 		name     string
 		snapshot Snapshot
+		error    bool
 		Expected []string
 	}{
 		{
 			name:     "LoadFiles",
 			snapshot: Snapshot{Path: "../testdata/volume/snapshot"},
+			error:    false,
 			Expected: []string{
 				"../testdata/volume/snapshot/snapshots",
 				"../testdata/volume/snapshot/snapshots/test.txt",
 			},
+		},
+		{
+			name:     "Symlink",
+			snapshot: Snapshot{Path: "../testdata/volume/symlink"},
+			error:    false,
+			Expected: []string{
+				"../testdata/volume/snapshot/snapshots",
+				"../testdata/volume/snapshot/snapshots/test.txt",
+			},
+		},
+		{
+			name: "Alreadyloaded",
+			snapshot: Snapshot{
+				Path:  "../testdata/volume/snapshot/",
+				Files: Files{File{Path: "file", APath: "../testdata/volume/snapshot/file"}},
+			},
+			error: false,
+			Expected: []string{
+				"../testdata/volume/snapshot/file",
+			},
+		},
+		{
+			name:     "Err",
+			snapshot: Snapshot{Path: ".undef"},
+			error:    true,
+			Expected: []string{},
 		},
 	}
 
@@ -30,14 +58,20 @@ func TestSnapshotLoadFiles(t *testing.T) {
 		t.Run(TestCase.name, func(t *testing.T) {
 			var got = TestCase.snapshot
 			err := got.LoadFiles()
-			if err != nil {
-				t.Errorf("error %v", err)
+
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("!error")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
 			}
 			if len(TestCase.Expected) != len(got.Files) {
 				t.Errorf("got %v, wanted %v", len(TestCase.Expected), len(got.Files))
 				return
 			}
-
 			for i, f := range got.Files {
 				if f.APath != TestCase.Expected[i] {
 					t.Errorf("got %v wanted %v", f.APath, TestCase.Expected[i])
@@ -50,63 +84,6 @@ func TestSnapshotLoadFiles(t *testing.T) {
 		})
 	}
 }
-
-/*
-func TestSnapshotLoadFilesAlreadyloaded(t *testing.T) {
-	var got = Snapshot{
-		Path:  "../testdata/volume/snapshot/",
-		Files: Files{File{Path: "file"}},
-	}
-	err := got.LoadFiles()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	if len(got.Files) != 1 {
-		t.Errorf("loaded files not preserved %v", got.Files)
-		return
-	}
-	if got.Files[0].Path != "file" {
-		t.Errorf("loaded files not preserved %v", got.Files[0])
-		return
-	}
-}
-
-func TestSnapshotLoadFilesSymlink(t *testing.T) {
-	var got = Snapshot{Path: "../testdata/volume/symlink"}
-	err := got.LoadFiles()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	want := []string{
-		"../testdata/volume/snapshot/snapshots",
-		"../testdata/volume/snapshot/snapshots/test.txt",
-	}
-
-	if len(want) != len(got.Files) {
-		t.Errorf("got %v, wanted %v", len(want), len(got.Files))
-		return
-	}
-
-	// []gotpaths = got.[]Files.Path
-	gotpaths := make([]string, len(got.Files))
-	for i, f := range got.Files {
-		gotpaths[i] = f.Path
-	}
-	for i, p := range gotpaths {
-		if p != want[i] {
-			t.Errorf("got %v wanted %v", p, want[i])
-		}
-	}
-}
-
-func TestSnapshotLoadFilesWithErr(t *testing.T) {
-	var s = Snapshot{Path: "undef"}
-	err := s.LoadFiles()
-	if err == nil {
-		t.Errorf("no error with undefined file")
-	}
-}
-*/
 
 func TestSnapshotLoadFilesInfo(t *testing.T) {
 	s := Snapshot{Files: []File{{APath: "./file.go"}}}
