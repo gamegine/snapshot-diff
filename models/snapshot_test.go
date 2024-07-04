@@ -8,6 +8,55 @@ import (
 	"time"
 )
 
+func TestEvalSymlinks(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		snapshot Snapshot
+		error    bool
+		Expected string
+	}{
+		{
+			name:     "snapshot",
+			snapshot: Snapshot{Path: "../testdata/volume/snapshot"},
+			error:    false,
+			Expected: "../testdata/volume/snapshot",
+		},
+		{
+			name:     "Symlink",
+			snapshot: Snapshot{Path: "../testdata/volume/symlink"},
+			error:    false,
+			Expected: "../testdata/volume/snapshot",
+		},
+		{
+			name:     "error",
+			snapshot: Snapshot{Path: "../testdata/volume/undef"},
+			error:    true,
+			Expected: "",
+		},
+	}
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			var got = TestCase.snapshot
+			err := got.EvalSymlinks()
+
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("!error")
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+			if got.ResolvePath != TestCase.Expected {
+				t.Errorf("got %v, wanted %v", got, TestCase.Expected)
+			}
+		})
+	}
+}
+
 func TestSnapshotLoadFiles(t *testing.T) {
 	// Anonymous struct of test cases
 	tests := []struct {
