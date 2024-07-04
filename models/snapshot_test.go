@@ -134,27 +134,27 @@ func TestSnapshotLoadFiles(t *testing.T) {
 	}
 }
 
-func TestSnapshotLoadFilesInfo(t *testing.T) {
-	s := Snapshot{Files: []File{{APath: "./file.go"}}}
-	err := s.LoadFilesInfo()
-	if err != nil {
-		t.Errorf("LoadFilesInfo error %v", err)
-	}
-	if s.Files[0].Mode == 0 {
-		t.Errorf("file is not load %v", s.Files[0])
-	}
-}
+// func TestSnapshotLoadFilesInfo(t *testing.T) {
+// 	s := Snapshot{Files: []File{{APath: "./file.go"}}}
+// 	err := s.LoadFilesInfo()
+// 	if err != nil {
+// 		t.Errorf("LoadFilesInfo error %v", err)
+// 	}
+// 	if s.Files[0].Mode == 0 {
+// 		t.Errorf("file is not load %v", s.Files[0])
+// 	}
+// }
 
-func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
-	s := Snapshot{Files: []File{
-		{APath: "./file.go"},
-		{APath: "./undef"},
-	}}
-	err := s.LoadFilesInfo()
-	if err == nil {
-		t.Errorf("no error with undefined file")
-	}
-}
+// func TestSnapshotLoadFilesInfoWithErr(t *testing.T) {
+// 	s := Snapshot{Files: []File{
+// 		{APath: "./file.go"},
+// 		{APath: "./undef"},
+// 	}}
+// 	err := s.LoadFilesInfo()
+// 	if err == nil {
+// 		t.Errorf("no error with undefined file")
+// 	}
+// }
 
 func TestSnapshotCacheFilePath(t *testing.T) {
 	s := Snapshot{Path: "testdata/volume/snapshot"}

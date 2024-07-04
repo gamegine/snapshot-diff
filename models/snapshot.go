@@ -11,9 +11,9 @@ import (
 
 type Snapshot struct {
 	// Name  string `json:"name"`
-	Path  string `json:"opath"`
+	Path        string `json:"opath"`
 	ResolvePath string `json:"rpath"`
-	Files Files  `json:"files"`
+	Files       Files  `json:"files"`
 }
 
 type Snapshots map[string]Snapshot
@@ -54,11 +54,11 @@ func (s *Snapshot) LoadFiles() error {
 				// 	return nil
 				// }
 			}
-			relativePath,err := filepath.Rel(s.ResolvePath,path)
+			relativePath, err := filepath.Rel(s.ResolvePath, path)
 			if err != nil {
 				return err
 			}
-			f := File{APath: path,Path:relativePath}
+			f := File{APath: path, Path: relativePath}
 			f.LoadFileInfo(info)
 			s.Files = append(s.Files, f)
 			return nil
@@ -69,15 +69,15 @@ func (s *Snapshot) LoadFiles() error {
 	return nil
 }
 
-func (s *Snapshot) LoadFilesInfo() error {
-	for i := range s.Files {
-		err := s.Files[i].Load()
-		if err != nil {
-			return err
-		}
-	}
-	return nil
-}
+// func (s *Snapshot) LoadFilesInfo() error {
+// 	for i := range s.Files {
+// 		err := s.Files[i].Load()
+// 		if err != nil {
+// 			return err
+// 		}
+// 	}
+// 	return nil
+// }
 
 func (s *Snapshot) CacheFilePath(cacheDir string) string {
 	return path.Join(cacheDir, s.Path[strings.LastIndex(s.Path, "/")+1:]) + ".json"
@@ -106,8 +106,8 @@ func (s *Snapshot) LoadCache(path string) error {
 	}
 	// unmarshal
 	err = json.Unmarshal(content, &s)
-	for i := range s.Files{
-		s.Files[i].APath = filepath.Join(s.ResolvePath,s.Files[i].Path)
+	for i := range s.Files {
+		s.Files[i].APath = filepath.Join(s.ResolvePath, s.Files[i].Path)
 	}
 	if err != nil {
 		// Error during Unmarshal
