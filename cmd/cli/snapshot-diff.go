@@ -37,7 +37,7 @@ func main() {
 			for i := range snapshot.Files {
 				f := &snapshot.Files[i]
 				if f.Sha256 == "" && !models.IsSpecialFile(*f) {
-					fmt.Printf("\t\t\thash: %s\n", f.Path)
+					fmt.Printf("\t\t\thash: %4d/%-4d %s\n", i, len(snapshot.Files), f.Path)
 					f.HashProgress()
 				}
 			}
