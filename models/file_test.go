@@ -75,70 +75,100 @@ func TestIsSpecialFile(t *testing.T) {
 }
 
 func TestHash(t *testing.T) {
-	var f = File{APath: "../LICENSE"}
-	err := f.Hash()
-	if err != nil {
-		t.Errorf("error %v", err)
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		file     File
+		error    bool
+		Expected string
+	}{
+		{
+			name:     "hash",
+			file:     File{APath: "../LICENSE"},
+			error:    false,
+			Expected: "6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9",
+		},
+		{
+			name:     "specialFile",
+			file:     File{APath: "../LICENSE", Mode: fs.ModeSocket},
+			error:    false,
+			Expected: "",
+		},
+		{
+			name:     "error",
+			file:     File{APath: "./undef"},
+			error:    true,
+			Expected: "",
+		},
 	}
-	got := f.Sha256
-	want := "6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9"
-	if got != want {
-		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestHashWithSpecialFile(t *testing.T) {
-	var f = File{APath: "../LICENSE", Mode: fs.ModeSocket}
-	err := f.Hash()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	got := f.Sha256
-	want := ""
-	if got != want {
-		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestHashWithErr(t *testing.T) {
-	var f = File{APath: "./undef"}
-	err := f.Hash()
-	if err == nil {
-		t.Errorf("no error with undefined file")
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			var f = TestCase.file
+			err := f.Hash()
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+			got := f.Sha256
+			if got != TestCase.Expected {
+				t.Errorf("got %v, wanted %v", got, TestCase.Expected)
+			}
+		})
 	}
 }
 
 func TestHashProgress(t *testing.T) {
-	var f = File{APath: "../LICENSE"}
-	err := f.HashProgress()
-	if err != nil {
-		t.Errorf("error %v", err)
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		file     File
+		error    bool
+		Expected string
+	}{
+		{
+			name:     "hash",
+			file:     File{APath: "../LICENSE"},
+			error:    false,
+			Expected: "6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9",
+		},
+		{
+			name:     "specialFile",
+			file:     File{APath: "../LICENSE", Mode: fs.ModeSocket},
+			error:    false,
+			Expected: "",
+		},
+		{
+			name:     "error",
+			file:     File{APath: "./undef"},
+			error:    true,
+			Expected: "",
+		},
 	}
-	got := f.Sha256
-	want := "6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9"
-	if got != want {
-		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestHashProgressWithSpecialFile(t *testing.T) {
-	var f = File{APath: "../LICENSE", Mode: fs.ModeSocket}
-	err := f.HashProgress()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	got := f.Sha256
-	want := ""
-	if got != want {
-		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestHashProgressWithErr(t *testing.T) {
-	var f = File{APath: "./undef"}
-	err := f.HashProgress()
-	if err == nil {
-		t.Errorf("no error with undefined file")
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			var f = TestCase.file
+			err := f.HashProgress()
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+			got := f.Sha256
+			if got != TestCase.Expected {
+				t.Errorf("got %v, wanted %v", got, TestCase.Expected)
+			}
+		})
 	}
 }
 
