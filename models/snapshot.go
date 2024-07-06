@@ -59,7 +59,7 @@ func (s *Snapshot) LoadFiles() error {
 				return err
 			}
 			f := File{APath: path, Path: relativePath}
-			f.LoadFileInfo(info)
+			f.SetFileInfo(info)
 			s.Files = append(s.Files, f)
 			return nil
 		})
