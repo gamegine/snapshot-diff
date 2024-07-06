@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func TestLoadFileInfo(t *testing.T) {
+func TestSetFileInfo(t *testing.T) {
 	fi, err := os.Stat("./file.go")
 	if err != nil {
 		t.Errorf("error %v", err)
@@ -15,44 +15,21 @@ func TestLoadFileInfo(t *testing.T) {
 	want := File{APath: "./file.go", Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
 
 	var got = File{APath: "./file.go", Path: "./file.go"}
-	got.LoadFileInfo(fi)
+	got.SetFileInfo(fi)
 	if got != want {
 		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestLoadFile(t *testing.T) {
-	var got = File{APath: "./file.go", Path: "./file.go"}
-	err := got.Load()
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-
-	fi, err := os.Stat("./file.go")
-	if err != nil {
-		t.Errorf("error %v", err)
-	}
-	want := File{APath: "./file.go", Path: "./file.go", IsDir: false, Mode: fi.Mode(), Size: fi.Size(), ModifTime: fi.ModTime()}
-
-	if got != want {
-		t.Errorf("got %v, wanted %v", got, want)
-	}
-}
-
-func TestLoadFileWithErr(t *testing.T) {
-	var f = File{APath: "./undef", Path: "./undef"}
-	err := f.Load()
-	if err == nil {
-		t.Errorf("no error with undefined file")
 	}
 }
 
 func TestIsSpecialFile(t *testing.T) {
 	var f = File{APath: "../LICENSE"}
-	err := f.Load()
+
+	fileInfo, err := os.Lstat(f.APath)
 	if err != nil {
 		t.Errorf("error %v", err)
 	}
+	f.SetFileInfo(fileInfo)
+
 	if IsSpecialFile(f) {
 		t.Errorf("LICENSE is not special file")
 	}

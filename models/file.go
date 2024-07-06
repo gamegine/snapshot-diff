@@ -24,7 +24,7 @@ type File struct {
 
 type Files []File
 
-func (f *File) LoadFileInfo(fileInfo os.FileInfo) {
+func (f *File) SetFileInfo(fileInfo os.FileInfo) {
 	*f = File{
 		Path:      f.Path,
 		APath:     f.APath,
@@ -34,16 +34,6 @@ func (f *File) LoadFileInfo(fileInfo os.FileInfo) {
 		Size:      fileInfo.Size(),
 		ModifTime: fileInfo.ModTime(),
 	}
-}
-
-func (f *File) Load() error {
-	fileInfo, err := os.Lstat(f.APath)
-	if err != nil {
-		return err
-
-	}
-	f.LoadFileInfo(fileInfo)
-	return nil
 }
 
 func IsSpecialFile(f File) bool {
