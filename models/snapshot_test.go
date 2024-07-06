@@ -66,7 +66,7 @@ func TestSnapshotLoadFiles(t *testing.T) {
 		Expected []string
 	}{
 		{
-			name:     "LoadFiles",
+			name:     "snapshot",
 			snapshot: Snapshot{Path: "../testdata/volume/snapshot"},
 			error:    false,
 			Expected: []string{
@@ -75,7 +75,7 @@ func TestSnapshotLoadFiles(t *testing.T) {
 			},
 		},
 		{
-			name:     "Symlink",
+			name:     "symlink",
 			snapshot: Snapshot{Path: "../testdata/volume/symlink"},
 			error:    false,
 			Expected: []string{
@@ -84,7 +84,7 @@ func TestSnapshotLoadFiles(t *testing.T) {
 			},
 		},
 		{
-			name: "Alreadyloaded",
+			name: "already loaded",
 			snapshot: Snapshot{
 				Path:  "../testdata/volume/snapshot/",
 				Files: Files{File{Path: "file", APath: "../testdata/volume/snapshot/file"}},
@@ -95,7 +95,7 @@ func TestSnapshotLoadFiles(t *testing.T) {
 			},
 		},
 		{
-			name:     "Err",
+			name:     "error",
 			snapshot: Snapshot{Path: ".undef"},
 			error:    true,
 			Expected: []string{},
@@ -167,67 +167,109 @@ func TestSnapshotCacheFilePath(t *testing.T) {
 }
 
 func TestSnapshotSaveCache(t *testing.T) {
-	s := Snapshot{Files: []File{
-		{Path: "./file.go"},
-	}}
-	err := s.SaveCache("../testdata/save-snapshot.json")
-	if err != nil {
-		t.Errorf("SaveCache error %v", err)
+	tests := []struct {
+		name     string
+		snapshot Snapshot
+		path     string
+		error    bool
+		Expected Snapshot
+	}{
+		{
+			name: "snapshot",
+			path: "../testdata/save-snapshot.json",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go"},
+			}},
+			error: false,
+		},
+		{
+			name: "path error",
+			path: "./",
+			snapshot: Snapshot{Files: []File{
+				{Path: "./file.go"},
+			}},
+			error: true,
+		},
 	}
-}
-
-func TestSnapshotSaveCacheWithPathErr(t *testing.T) {
-	s := Snapshot{Files: []File{
-		{Path: "./file.go"},
-	}}
-	err := s.SaveCache("./")
-	if err == nil {
-		t.Error("no error with dir path to save file")
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			err := TestCase.snapshot.SaveCache(TestCase.path)
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+		})
 	}
 }
 
 func TestSnapshotLoadCache(t *testing.T) {
-	s := Snapshot{}
-	err := s.LoadCache("../testdata/snapshot-cache.json")
-	if err != nil {
-		t.Errorf("LoadCache error %v", err)
-	}
-
 	T, _ := time.Parse(time.RFC3339, "0001-01-01T00:00:00Z")
-	want := Snapshot{
-		Path:        "testdata/volume/snapshot",
-		ResolvePath: "testdata/volume/snapshot",
-		Files: Files{
-			{Path: "snapshots", APath: "testdata/volume/snapshot/snapshots", IsDir: true, Mode: 0, Size: 0, ModifTime: T},
-			{Path: "snapshots/test.txt", APath: "testdata/volume/snapshot/snapshots/test.txt", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
-		}}
-	if s.Path != want.Path {
-		t.Errorf("got %v, wanted %v", s, want)
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		path     string
+		error    bool
+		Expected Snapshot
+	}{
+		{
+			name:  "snapshot",
+			path:  "../testdata/snapshot-cache.json",
+			error: false,
+			Expected: Snapshot{
+				Path:        "testdata/volume/snapshot",
+				ResolvePath: "testdata/volume/snapshot",
+				Files: Files{
+					{Path: "snapshots", APath: "testdata/volume/snapshot/snapshots", IsDir: true, Mode: 0, Size: 0, ModifTime: T},
+					{Path: "snapshots/test.txt", APath: "testdata/volume/snapshot/snapshots/test.txt", IsDir: false, Mode: 0, Size: 0, ModifTime: T},
+				}},
+		},
+		{
+			name:     "path error",
+			path:     "./undef",
+			error:    true,
+			Expected: Snapshot{},
+		},
+		{
+			name:     "json error",
+			path:     "../testdata/snapshot-cache-error.json",
+			error:    true,
+			Expected: Snapshot{},
+		},
 	}
-	if len(s.Files) != len(want.Files) {
-		t.Errorf("got %v, wanted %v", s, want)
-	}
-	for i := range s.Files {
-		if s.Files[i] != want.Files[i] {
-			t.Errorf("got %v, wanted %v", s, want)
-		}
-	}
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			s := Snapshot{}
+			err := s.LoadCache(TestCase.path)
 
-}
-
-func TestSnapshotLoadCacheWithPathErr(t *testing.T) {
-	s := Snapshot{}
-	err := s.LoadCache("./undef")
-	if err == nil {
-		t.Error("no error with dir path to save file")
-	}
-}
-
-func TestSnapshotLoadCacheWithJsonErr(t *testing.T) {
-	s := Snapshot{}
-	err := s.LoadCache("../testdata/snapshot-cache-error.json")
-	if err == nil {
-		t.Error("no error with invalid json format")
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("LoadCache error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("LoadCache error %v", err)
+				}
+			}
+			want := TestCase.Expected
+			if s.Path != want.Path {
+				t.Errorf("got %v, wanted %v", s, want)
+			}
+			if len(s.Files) != len(want.Files) {
+				t.Errorf("got %v, wanted %v", s, want)
+			}
+			for i := range s.Files {
+				if s.Files[i] != want.Files[i] {
+					t.Errorf("got %v, wanted %v", s, want)
+				}
+			}
+		})
 	}
 }
 
