@@ -15,6 +15,44 @@ func JSONString(j any) string {
 	return string(b)
 }
 
+func TestInitVolumes(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		path     string
+		Expected models.Volumes
+		error    bool
+	}{
+		{
+			name:  "volumes",
+			path:  "../testdata",
+			error: false,
+		},
+		{
+			name:  "error snapshots path",
+			path:  "/mnt/snapshot/export/Unified-Snapshot/",
+			error: true,
+		},
+	}
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			models.SnapshotsCachePath = "../cache"
+			models.SnapshotsPath = TestCase.path
+			err := InitVolumes()
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+		})
+	}
+}
+
 func TestControllerGetVolumes(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	// Anonymous struct of test cases
@@ -76,6 +114,13 @@ func TestControllerGetVolume(t *testing.T) {
 			Expected:     "{\"Snapshots\":[],\"SnapshotsPath\":\"SnapshotsPath\"}",
 			ExpectedCode: 200,
 		},
+		{
+			name:         "get undef volume",
+			get:          "undef",
+			Volumes:      models.Volumes{},
+			Expected:     "{\"code\":\"404\",\"msg\":\"volume not found\"}",
+			ExpectedCode: 404,
+		},
 	}
 
 	for _, TestCase := range tests {
@@ -114,11 +159,26 @@ func TestControllerGetSnapshot(t *testing.T) {
 			name: "get snapshot",
 			get:  "volume/snapshot",
 			Volumes: models.Volumes{"volume": models.Volume{
-				Snapshots: models.Snapshots{"snapshot": s},
-			},
+				Snapshots: models.Snapshots{"snapshot": s}},
 			},
 			Expected:     JSONString(s),
 			ExpectedCode: 200,
+		},
+		{
+			name:         "get undef volume",
+			get:          "undef/snapshot",
+			Volumes:      models.Volumes{},
+			Expected:     "{\"code\":\"404\",\"msg\":\"volume not found\"}",
+			ExpectedCode: 404,
+		},
+		{
+			name: "get undef snapshot",
+			get:  "volume/undef",
+			Volumes: models.Volumes{"volume": models.Volume{
+				Snapshots: models.Snapshots{"snapshot": s}},
+			},
+			Expected:     "{\"code\":\"404\",\"msg\":\"snapshot not found\"}",
+			ExpectedCode: 404,
 		},
 	}
 
