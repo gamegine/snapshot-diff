@@ -404,3 +404,115 @@ func TestSnapshotIsHash(t *testing.T) {
 		})
 	}
 }
+
+func TestSnapshotHash(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name          string
+		snapshot      Snapshot
+		Expected      []string
+		ExpectedError bool
+	}{
+		{
+			name:          "hash",
+			snapshot:      Snapshot{Files: []File{{APath: "../LICENSE"}}},
+			Expected:      []string{"6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9"},
+			ExpectedError: false,
+		},
+		{
+			name:          "specialFile",
+			snapshot:      Snapshot{Files: []File{{APath: "../LICENSE", Mode: fs.ModeSocket}}},
+			Expected:      []string{""},
+			ExpectedError: false,
+		},
+		{
+			name:          "error",
+			snapshot:      Snapshot{Files: []File{{APath: "./undef"}}},
+			Expected:      []string{""},
+			ExpectedError: true,
+		},
+		{
+			name:          "not recompute",
+			snapshot:      Snapshot{Files: []File{{APath: "./undef", Sha256: "test"}}},
+			Expected:      []string{"test"},
+			ExpectedError: false,
+		},
+	}
+
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			err := TestCase.snapshot.Hash()
+
+			// error
+			if err != nil && !TestCase.ExpectedError {
+				t.Errorf("got error %v", err)
+			}
+			if err == nil && TestCase.ExpectedError {
+				t.Error("expected error not present")
+			}
+
+			for i, f := range TestCase.snapshot.Files {
+				if f.Sha256 != TestCase.Expected[i] {
+					t.Errorf("got %v, wanted %v", f.Sha256, TestCase.Expected[i])
+				}
+			}
+		})
+	}
+}
+
+func TestSnapshotHashProgress(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name          string
+		snapshot      Snapshot
+		Expected      []string
+		ExpectedError bool
+	}{
+		{
+			name:          "hash",
+			snapshot:      Snapshot{Files: []File{{APath: "../LICENSE"}}},
+			Expected:      []string{"6634449D791CDB054AD21E4602AB0E0912DC3B1629DF90CB08512347D35F53E9"},
+			ExpectedError: false,
+		},
+		{
+			name:          "specialFile",
+			snapshot:      Snapshot{Files: []File{{APath: "../LICENSE", Mode: fs.ModeSocket}}},
+			Expected:      []string{""},
+			ExpectedError: false,
+		},
+		{
+			name:          "error",
+			snapshot:      Snapshot{Files: []File{{APath: "./undef"}}},
+			Expected:      []string{""},
+			ExpectedError: true,
+		},
+		{
+			name:          "not recompute",
+			snapshot:      Snapshot{Files: []File{{APath: "./undef", Sha256: "test"}}},
+			Expected:      []string{"test"},
+			ExpectedError: false,
+		},
+	}
+
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			err := TestCase.snapshot.HashProgress()
+
+			// error
+			if err != nil && !TestCase.ExpectedError {
+				t.Errorf("got error %v", err)
+			}
+			if err == nil && TestCase.ExpectedError {
+				t.Error("expected error not present")
+			}
+
+			for i, f := range TestCase.snapshot.Files {
+				if f.Sha256 != TestCase.Expected[i] {
+					t.Errorf("got %v, wanted %v", f.Sha256, TestCase.Expected[i])
+				}
+			}
+		})
+	}
+}

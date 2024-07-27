@@ -2,6 +2,7 @@ package models
 
 import (
 	"encoding/json"
+	"fmt"
 
 	"os"
 	"path"
@@ -146,4 +147,31 @@ func (s *Snapshot) IsHash() bool {
 		}
 	}
 	return true
+}
+
+func (s *Snapshot) Hash() error {
+	for i, f := range s.Files {
+		if f.Sha256 != "" {
+			continue
+		}
+		err := s.Files[i].Hash()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (s *Snapshot) HashProgress() error {
+	for i, f := range s.Files {
+		if f.Sha256 != "" {
+			continue
+		}
+		fmt.Printf("%4d/%-4d %s\n", i+1, len(s.Files), f.Path)
+		err := s.Files[i].HashProgress()
+		if err != nil {
+			return err
+		}
+	}
+	return nil
 }
