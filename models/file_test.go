@@ -49,6 +49,11 @@ func TestIsSpecialFile(t *testing.T) {
 	if !IsSpecialFile(f) {
 		t.Errorf("Pipe is special file")
 	}
+	f.Mode = m
+	f.Mode |= fs.ModeSymlink
+	if !IsSpecialFile(f) {
+		t.Errorf("Symlink is special file")
+	}
 }
 
 func TestHash(t *testing.T) {

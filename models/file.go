@@ -39,7 +39,8 @@ func (f *File) SetFileInfo(fileInfo os.FileInfo) {
 func IsSpecialFile(f File) bool {
 	return f.IsDir || // IsSpecialFile is used avoid hash, we cannot hash a folder
 		f.Mode&fs.ModeSocket == fs.ModeSocket ||
-		f.Mode&fs.ModeNamedPipe == fs.ModeNamedPipe
+		f.Mode&fs.ModeNamedPipe == fs.ModeNamedPipe ||
+		f.Mode&fs.ModeSymlink == fs.ModeSymlink
 }
 
 func (f *File) Hash() error {
