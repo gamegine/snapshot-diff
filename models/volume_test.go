@@ -54,83 +54,6 @@ func TestLoadVolumes(t *testing.T) {
 	}
 }
 
-func TestVolumeUpdateSnapshotsList(t *testing.T) {
-	// Anonymous struct of test cases
-	tests := []struct {
-		name          string
-		volume        Volume
-		error         bool
-		Expected      []string
-		ExpectedFiles []string
-	}{
-		{
-			name:          "volume",
-			volume:        Volume{SnapshotsPath: "../testdata/volume"},
-			error:         false,
-			Expected:      []string{"snapshot", "symlink"},
-			ExpectedFiles: []string{},
-		},
-		{
-			name: "existing snapshot",
-			volume: Volume{SnapshotsPath: "../testdata/volume",
-				Snapshots: Snapshots{
-					"snapshot": Snapshot{
-						Path:  "../testdata/volume/snapshot",
-						Files: Files{File{Path: "test"}},
-					},
-				},
-			},
-			error:         false,
-			Expected:      []string{"snapshot", "symlink"},
-			ExpectedFiles: []string{"test"},
-		},
-		{
-			name:          "error",
-			volume:        Volume{SnapshotsPath: "./undef"},
-			error:         true,
-			Expected:      []string{},
-			ExpectedFiles: []string{},
-		},
-	}
-	for _, TestCase := range tests {
-		// each test case from  table above run as a subtest
-		t.Run(TestCase.name, func(t *testing.T) {
-			err := TestCase.volume.UpdateSnapshotsList()
-			if TestCase.error {
-				if err == nil {
-					t.Errorf("error %v", err)
-				}
-			} else {
-				if err != nil {
-					t.Errorf("error %v", err)
-				}
-			}
-			if len(TestCase.volume.Snapshots) != len(TestCase.Expected) {
-				t.Errorf("got %v, wanted %v", len(TestCase.volume.Snapshots), len(TestCase.Expected))
-				return
-			}
-			for _, s := range TestCase.Expected {
-				if !utils.MapContains(TestCase.volume.Snapshots, s) {
-					t.Errorf("got %v wanted %v", utils.MapKeys(TestCase.volume.Snapshots), s)
-				}
-				if TestCase.volume.Snapshots[s].Path != TestCase.volume.SnapshotsPath+"/"+s {
-					t.Errorf("got %v wanted %s/%v", TestCase.volume.Snapshots[s].Path, TestCase.volume.SnapshotsPath, s)
-				}
-			}
-
-			// snapshot data not deleted
-			if len(TestCase.volume.Snapshots["snapshot"].Files) != len(TestCase.ExpectedFiles) {
-				t.Errorf("got %v wanted %v", len(TestCase.volume.Snapshots["snapshot"].Files), 1)
-			}
-			for i := range TestCase.ExpectedFiles {
-				if TestCase.volume.Snapshots["snapshot"].Files[i].Path != TestCase.ExpectedFiles[i] {
-					t.Errorf("got %v wanted %v", TestCase.volume.Snapshots["snapshot"].Files[i].Path, TestCase.ExpectedFiles[i])
-				}
-			}
-		})
-	}
-}
-
 func TestVolumeName(t *testing.T) {
 	SnapshotsPath = "../testdata/"
 	var s = Volume{SnapshotsPath: "../testdata/snapshot Snapshot"}
@@ -152,5 +75,87 @@ func TestCacheDir(t *testing.T) {
 	}
 	if _, err := os.Stat(got); os.IsNotExist(err) {
 		t.Error("cache path does not exist")
+	}
+}
+
+func TestVolumeGetVolume(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+	got := GetVolume("volume")
+	want := Volume{SnapshotsPath: "../testdata/volume"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestVolumeGetSnapshots(t *testing.T) {
+	// Anonymous struct of test cases
+	tests := []struct {
+		name     string
+		volume   Volume
+		error    bool
+		Expected []string
+	}{
+		{
+			name:     "volume",
+			volume:   Volume{SnapshotsPath: "../testdata/volume"},
+			error:    false,
+			Expected: []string{"snapshot", "symlink"},
+		},
+		{
+			name:     "error",
+			volume:   Volume{SnapshotsPath: "./undef"},
+			error:    true,
+			Expected: nil,
+		},
+	}
+	for _, TestCase := range tests {
+		// each test case from  table above run as a subtest
+		t.Run(TestCase.name, func(t *testing.T) {
+			snapshots, err := TestCase.volume.GetSnapshots()
+			if TestCase.error {
+				if err == nil {
+					t.Errorf("error %v", err)
+				}
+			} else {
+				if err != nil {
+					t.Errorf("error %v", err)
+				}
+			}
+			if !reflect.DeepEqual(snapshots, TestCase.Expected) {
+				t.Errorf("got %v, wanted %v", snapshots, TestCase.Expected)
+			}
+		})
+	}
+}
+
+func TestVolumeGetSnapshot(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+	volume := GetVolume("volume")
+
+	got := volume.GetSnapshot("snapshot")
+	want := Snapshot{Path: "../testdata/volume/snapshot"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestVolumeGetSnapshot1(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+
+	got := GetSnapshot("volume", "snapshot")
+	want := Snapshot{Path: "../testdata/volume/snapshot"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("got %v, wanted %v", got, want)
+	}
+}
+
+func TestVolumeGetVolumeCacheDir(t *testing.T) {
+	SnapshotsPath = "../testdata/"
+	SnapshotsCachePath = "../cache"
+
+	got := GetVolumeCacheDir("volume")
+	want := "../cache/volume"
+	if got != want {
+		t.Errorf("got %v, wanted %v", got, want)
 	}
 }

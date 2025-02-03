@@ -164,7 +164,7 @@ func (s *Snapshot) Hash() error {
 
 func (s *Snapshot) HashProgress() error {
 	for i, f := range s.Files {
-		if f.Sha256 != "" {
+		if f.Sha256 != "" || f.IsDir {
 			continue
 		}
 		fmt.Printf("%4d/%-4d %s\n", i+1, len(s.Files), f.Path)
